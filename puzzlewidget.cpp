@@ -424,18 +424,13 @@ void PuzzleWidget::setNewWidgetPuzzlePieceWidget(QWidget *parent, const Paramete
     int borderPuzzlePieceWidth = numberOfTypes != 1 ? (par.widthWidgetPuzzlePiece - par.minBorderWidth * 2 - (numberOfTypes) * labelPuzzlePieceWidth) / (numberOfTypes - 1) : 0;
     int borderPuzzlePieceHeight = (par.heightWidgetPuzzlePiece - par.minBorderWidth * 2 - labelPuzzlePieceHeight - par.minRadioButtonHeight) / 2;
 
-    QSize sizeLabelPuzzlePieceInnerBounds(40, 40);
-    QPen penPuzzlePiece(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-    QPixmap pixmapPuzzlePiece(sizeLabelPuzzlePiece);
-    pixmapPuzzlePiece.fill(Qt::lightGray);
-
     for (int i = 0; i < numberOfTypes; ++i) {
         labelPuzzlePiece.push_back(new JigsawButton(widgetPuzzlePiece));
         if (noPreviewPuzzlePiece) {
             labelPuzzlePiece[i]->setText("Type " + QString::number(i + 1));
         }
         else {
-            QPainterPath path = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeLabelPuzzlePiece), QRect(), JigsawPath::intToTypeOfPiece(i), 4, true);
+            QPainterPath path = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeLabelPuzzlePiece), QRect(), JigsawPath::intToTypeOfPiece(i == numberOfTypes - 1 ? 0 : i), 4, true);
             labelPuzzlePiece[i]->setJigsawPath(path, sizeLabelPuzzlePiece, QBrush(Qt::lightGray));
             labelPuzzlePiece[i]->animate();
         }
@@ -455,6 +450,7 @@ void PuzzleWidget::setNewWidgetPuzzlePieceWidget(QWidget *parent, const Paramete
     QObject::connect(m_radioButtonPuzzlePiece.last(), &QRadioButton::toggled, m_createOwnShapeWidget, &QWidget::show);
     QFont font("Georgia", 32, QFont::Bold);
     labelPuzzlePiece.last()->setText("?");
+    labelPuzzlePiece.last()->setTextArea(labelPuzzlePiece.last()->rect());
     labelPuzzlePiece.last()->setFont(font);
 }
 
@@ -480,11 +476,10 @@ void PuzzleWidget::setNewWidgetButtonsWidget(QWidget *parent, const Parameters &
     QWidget* widgetButtons = new QWidget(parent);
     widgetButtons->setGeometry(par.rectWidgetButtons);
 
-    QSize sizeButtonOuterBounds(130, 100);
-    QSize sizeButtonInnerBounds(70, 60);
+    QSize sizeButtonOuterBounds(120, 120);
 
-    QPainterPath pathOkButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), par.sizeButtonOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
-    QPainterPath pathCancelButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), par.sizeButtonOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
+    QPainterPath pathOkButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeButtonOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
+    QPainterPath pathCancelButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeButtonOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
 
     JigsawButton* okButton = new JigsawButton(sizeButtonOuterBounds, QBrush(QPixmap(":/backgrounds/back2")), pathOkButton, widgetButtons, "Ok");
     okButton->animate();

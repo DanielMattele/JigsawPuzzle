@@ -209,7 +209,7 @@ void JigsawSlider::paintBackgroundLabel()
                     ? QRect(QPoint(SLIDERPENWIDTH, m_overallRect.height() / 2 - SLIDERWIDTH / 2), QSize(m_overallRect.width() - SLIDERPENWIDTH * 2, SLIDERWIDTH))
                     : QRect(QPoint(m_overallRect.width() / 2 - SLIDERWIDTH / 2, SLIDERPENWIDTH), QSize(SLIDERWIDTH, m_overallRect.height() - SLIDERPENWIDTH * 2));
     painter.drawRoundedRect(paintArea, SLIDERRADIUS, SLIDERRADIUS);
-    m_backgroundLabel->setPixmap(background, false);
+    m_backgroundLabel->setPixmap(background, true);
     m_backgroundLabel->setMask((background.mask()));
     m_backgroundLabel->stackUnder(this);
 }

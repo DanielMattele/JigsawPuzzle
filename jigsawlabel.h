@@ -30,6 +30,7 @@ protected:
 
     QBrush m_brush;
     QPointF m_originalPosition;
+    QSizeF m_originalSize;
     void redraw();
 
 public:

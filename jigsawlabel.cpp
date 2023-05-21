@@ -20,12 +20,15 @@ void JigsawLabel::setPixmap(const QPixmap &newPixmap, bool resize, QRect newText
 {
     m_pixmap = newPixmap;
     m_mode = JigsawLabel::Mode::PIXMAP;
-    if (resize) setGeometry(QRectF(m_originalPosition, newPixmap.size()).toRect());
+    if (resize) {
+        m_originalSize = newPixmap.size();
+        setGeometry(QRectF(m_originalPosition, m_originalSize).toRect());
+    }
     if (!newTextArea.isNull()) {
         m_textArea = newTextArea;
     }
     else if (resize) {
-        m_textArea = QRect(QPoint(0, 0), newPixmap.size());
+        m_textArea = QRectF(QPoint(0, 0), m_originalSize).toRect();
     }
     redraw();
 }
@@ -43,7 +46,8 @@ void JigsawLabel::setJigsawPath(const QPainterPath &newJigsawPath, const QSize &
 
 void JigsawLabel::setJigsawPath(const QPainterPath &newJigsawPath, const QSize &newSize)
 {
-    setGeometry(QRectF(m_originalPosition, newSize).toRect());
+    m_originalSize = newSize;
+    setGeometry(QRectF(m_originalPosition, m_originalSize).toRect());
     setJigsawPath(newJigsawPath);
 }
 
@@ -128,9 +132,9 @@ QPointF JigsawLabel::originalPosition() const
 
 void JigsawLabel::redraw()
 {
-    setGeometry(QRectF(m_originalPosition, m_pixmap.size()).toRect());
+    setGeometry(QRectF(m_originalPosition, m_originalSize).toRect());
 
-    QPixmap pixmap(m_pixmap.size());
+    QPixmap pixmap(m_originalSize.toSize());
     pixmap.fill(Qt::transparent);
     QPainter painter;
 
@@ -161,7 +165,8 @@ JigsawLabel::JigsawLabel(QWidget *parent)
     : QLabel{parent}
 {
     m_originalPosition = QPointF(0.0, 0.0);
-    setGeometry(QRectF(m_originalPosition, QSize(DEFAULTWIDTH, DEFAULTHEIGHT)).toRect());
+    m_originalSize = QSizeF(DEFAULTWIDTH, DEFAULTHEIGHT);
+    setGeometry(QRectF(m_originalPosition, m_originalSize).toRect());
     m_text = "";
     m_pixmap = QPixmap(QSize(DEFAULTWIDTH, DEFAULTHEIGHT));
     m_pixmap.fill(Qt::transparent);
@@ -180,7 +185,8 @@ JigsawLabel::JigsawLabel(const QPixmap &background, QWidget *parent, const QStri
     : QLabel{parent}
 {
     m_originalPosition = QPointF(0.0, 0.0);
-    setGeometry(QRectF(m_originalPosition, background.size()).toRect());
+    m_originalSize = QSizeF(background.size());
+    setGeometry(QRectF(m_originalPosition, m_originalSize).toRect());
     m_text = text;
     m_pixmap = background;
     m_brush = QBrush();
@@ -198,7 +204,8 @@ JigsawLabel::JigsawLabel(const QSize &size, const QBrush &background, const QPai
     : QLabel{parent}
 {
     m_originalPosition = QPointF(0.0, 0.0);
-    setGeometry(QRectF(m_originalPosition, size).toRect());
+    m_originalSize = size;
+    setGeometry(QRectF(m_originalPosition, m_originalSize).toRect());
     m_text = text;
     m_pixmap = QPixmap(size);
     m_brush = background;
