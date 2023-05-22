@@ -13,6 +13,7 @@ JigsawPiece::JigsawPiece(int id, QWidget* parent)
     , m_rotationEnabled(true)
     , m_dragEnabled(true)
     , m_moveTimer(new QTimer(this))
+    , m_timerStartTime(QDateTime::currentDateTime())
 {
     calculateMaxRectForRotation();
     setGeometry(m_maxRectForRotation.toRect());
@@ -35,6 +36,7 @@ JigsawPiece::JigsawPiece(int id, const QPixmap &background, QWidget *parent)
     , m_rotationEnabled(true)
     , m_dragEnabled(true)
     , m_moveTimer(new QTimer(this))
+    , m_timerStartTime(QDateTime::currentDateTime())
 {
     calculateMaxRectForRotation();
     setGeometry(m_maxRectForRotation.toRect());
@@ -57,6 +59,7 @@ JigsawPiece::JigsawPiece(int id, const QSize &size, const QBrush &background, co
     , m_rotationEnabled(true)
     , m_dragEnabled(true)
     , m_moveTimer(new QTimer(this))
+    , m_timerStartTime(QDateTime::currentDateTime())
 {
     calculateMaxRectForRotation();
     setGeometry(m_maxRectForRotation.toRect());
@@ -184,6 +187,12 @@ void JigsawPiece::moveTimerTimeOut()
     if (draggedBy.isNull()) return;
     move(newPosition);
     emit dragged(m_id, draggedBy);
+    if (m_timerStartTime.msecsTo(QDateTime::currentDateTime()) >= 10000) {
+        m_moveTimer->stop();
+        m_selected = false;
+        m_dragged = false;
+        emit dragStopped(m_id);
+    }
 }
 
 void JigsawPiece::mousePressEvent(QMouseEvent *event)
@@ -193,7 +202,8 @@ void JigsawPiece::mousePressEvent(QMouseEvent *event)
         m_selected = !m_selected;
         if (m_selected) {
             m_moveTimer->start(1000 / FPS);
-            raise();
+            m_timerStartTime = QDateTime::currentDateTime();
+            emit dragStarted(m_id);
         }
         else {
             m_moveTimer->stop();
@@ -222,11 +232,6 @@ void JigsawPiece::mouseReleaseEvent(QMouseEvent *event)
     if (m_rotated) emit rotateStopped(m_id);
     m_rotated = false;
     emit released(m_id);
-}
-
-void JigsawPiece::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    emit doubleClicked(m_id);
 }
 
 void JigsawPiece::mouseMoveEvent(QMouseEvent *event)

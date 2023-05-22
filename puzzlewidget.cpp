@@ -214,6 +214,7 @@ void PuzzleWidget::generatePuzzlePieces()
     for (unsigned int i = 0; i < m_numberOfPieces; ++i) {
         m_puzzlePieces.push_back(new JigsawPiece(i, m_grid->pieceTotalSize(), QBrush(createImageFragment(i)), m_grid->puzzlePath(i), this));
         m_puzzlePieces.last()->setRotationEnabled(false);
+        QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragStarted, this, &PuzzleWidget::raisePieces);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragged, this, &PuzzleWidget::dragMergedPieces);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragStopped, this, &PuzzleWidget::fixPieceIfPossible);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::rotateStopped, this, &PuzzleWidget::fixPieceIfPossible);
@@ -663,8 +664,20 @@ void PuzzleWidget::dragMergedPieces(int id, const QPointF &draggedBy)
     int mergedPieceID;
     if (isPartOfMergedPiece(m_puzzlePieces[id], mergedPieceID)) {
         for (const auto &piece : m_mergedPieces[mergedPieceID]) {
-            piece->raise();
             if (piece != m_puzzlePieces[id]) piece->move(piece->originalPosition() + draggedBy);
         }
+    }
+}
+
+void PuzzleWidget::raisePieces(int id)
+{
+    int mergedPieceID;
+    if (isPartOfMergedPiece(m_puzzlePieces[id], mergedPieceID)) {
+        for (const auto &piece : m_mergedPieces[mergedPieceID]) {
+            piece->raise();
+        }
+    }
+    else {
+        m_puzzlePieces[id]->raise();
     }
 }

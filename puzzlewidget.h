@@ -195,6 +195,7 @@ private slots:
     void newWidgetOwnImageClicked();
 
     void dragMergedPieces(int id, const QPointF &draggedBy);
+    void raisePieces(int id);
     void fixPieceIfPossible(int id);
     void fixMergedPieceIfPossible(int id);
 

@@ -2,6 +2,7 @@
 #define JIGSAWPIECE_H
 
 #include "jigsawlabel.h"
+#include <QDateTime>
 #include <QMouseEvent>
 #include <QTimer>
 
@@ -29,6 +30,7 @@ private:
 
     QPointF m_actualPosition;
     QTimer* m_moveTimer;
+    QDateTime m_timerStartTime;
 
 private slots:
     void moveTimerTimeOut();
@@ -37,7 +39,6 @@ private slots:
 protected:
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
-    virtual void mouseDoubleClickEvent(QMouseEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void enterEvent(QEnterEvent *event) override;
     virtual void leaveEvent(QEvent *event) override;
@@ -87,8 +88,8 @@ signals:
     void rightClicked(int id);
     void leftClicked(int id);
     void released(int id);
-    void doubleClicked(int id);
     void dragged(int id, const QPointF &draggedBy);
+    void dragStarted(int id);
     void dragStopped(int id);
     void rotated(int id, int angle, const QPointF &rotatingPoint);
     void rotateStopped(int id);
