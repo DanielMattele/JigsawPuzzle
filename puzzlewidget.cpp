@@ -104,7 +104,7 @@ void PuzzleWidget::fixPieceIfPossible(int id)
             }
         }
     }
-    if (!m_mergedPieces.isEmpty() && m_mergedPieces[0].size() == m_numberOfPieces) m_wonWidget->show();
+    if (!m_mergedPieces.isEmpty() && m_mergedPieces[0].size() == m_numberOfPieces) wonGame();
 }
 
 void PuzzleWidget::fixMergedPieceIfPossible(int id)
@@ -524,6 +524,16 @@ void PuzzleWidget::setWonWidget()
     m_wonWidget->hide();
 }
 
+void PuzzleWidget::wonGame()
+{
+    for (const auto &puzzlePiece : m_puzzlePieces) {
+        puzzlePiece->hide();
+    }
+    ImageEffect* effect = new ImageEffect(m_background, m_image, ImageEffect::TypeOfEffect::GROW, this, 1000);
+    QObject::connect(effect, &ImageEffect::effectFinished, m_wonWidget, &QWidget::show);
+    effect->run();
+}
+
 void PuzzleWidget::setCreateOwnShapeWidget()
 {
     m_createOwnShapeWidget = new QWidget(this);
@@ -643,6 +653,8 @@ void PuzzleWidget::newWidgetOkClicked()
     setupPuzzle();
     m_newWidget->lower();
     m_newWidget->hide();
+
+    m_background->setPixmap(QPixmap(":/backgrounds/back1"));
 }
 
 void PuzzleWidget::newWidgetOwnImageClicked()

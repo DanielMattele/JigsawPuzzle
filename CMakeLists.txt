@@ -45,6 +45,8 @@ set(PROJECT_SOURCES
         jigsawslider.cpp
         jigsawslider.h
 
+        imageeffect.h
+        imageeffect.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

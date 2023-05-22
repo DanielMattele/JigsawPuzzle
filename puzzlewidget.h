@@ -8,11 +8,13 @@
 #include "jigsawpiece.h"
 #include "jigsawbutton.h"
 #include "jigsawslider.h"
+#include "imageeffect.h"
 #include <QRadioButton>
 #include <QWidget>
 #include <QTimer>
 #include <QPainterPath>
 #include <QLabel>
+#include <QThread>
 
 struct Parameters {
     int screenWidth = 1920;
@@ -170,6 +172,7 @@ private:
     QWidget* m_wonWidget;
 
     void setWonWidget();
+    void wonGame();
 
     QWidget* m_createOwnShapeWidget;
 
