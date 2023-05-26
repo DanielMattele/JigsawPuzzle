@@ -15,11 +15,7 @@ JigsawPiece::JigsawPiece(int id, QWidget* parent)
     , m_moveTimer(new QTimer(this))
     , m_timerStartTime(QDateTime::currentDateTime())
 {
-    calculateMaxRectForRotation();
-    setGeometry(m_maxRectForRotation.toRect());
-    m_actualPosition = m_maxRectForRotation.topLeft();
-    redraw();
-
+    expandGeometryForRotation();
     QObject::connect(m_moveTimer, &QTimer::timeout, this, &JigsawPiece::moveTimerTimeOut);
 }
 
@@ -38,11 +34,7 @@ JigsawPiece::JigsawPiece(int id, const QPixmap &background, QWidget *parent)
     , m_moveTimer(new QTimer(this))
     , m_timerStartTime(QDateTime::currentDateTime())
 {
-    calculateMaxRectForRotation();
-    setGeometry(m_maxRectForRotation.toRect());
-    m_actualPosition = m_maxRectForRotation.topLeft();
-    redraw();
-
+    expandGeometryForRotation();
     QObject::connect(m_moveTimer, &QTimer::timeout, this, &JigsawPiece::moveTimerTimeOut);
 }
 
@@ -61,11 +53,7 @@ JigsawPiece::JigsawPiece(int id, const QSize &size, const QBrush &background, co
     , m_moveTimer(new QTimer(this))
     , m_timerStartTime(QDateTime::currentDateTime())
 {
-    calculateMaxRectForRotation();
-    setGeometry(m_maxRectForRotation.toRect());
-    m_actualPosition = m_maxRectForRotation.topLeft();
-    redraw();
-
+    expandGeometryForRotation();
     QObject::connect(m_moveTimer, &QTimer::timeout, this, &JigsawPiece::moveTimerTimeOut);
 }
 
@@ -106,12 +94,46 @@ void JigsawPiece::setBorderPen(const QPen &newBorderPen)
 
 void JigsawPiece::setAngle(int newAngle)
 {
-    newAngle %= 360;
-    if (newAngle < 0) newAngle += 360;
     if (newAngle == m_angle) return;
     m_angle = newAngle;
     redraw();
-    emit rotated(m_id, m_angle, m_actualPosition);
+    emit rotated(m_id, m_angle, mapToParent(m_maxRectForRotation.center() - m_maxRectForRotation.topLeft()));
+}
+
+/*
+ * If you use this function without the constDistance and constOriginalAngle values, it gets very unprecise. The
+ * JigsawPiece you rotate around the given point will subsequently move away from the position it should be moved
+ * to. The more often the function is called, the larger this deviation becomes.
+ */
+
+void JigsawPiece::rotateAroundPoint(int angle, const QPointF &point, double constDistance, double constOriginalAngle)
+{
+    //Case 1: No original angle was set
+    //Case 2: Original angle was set, but no valid distance was set
+
+    if (constOriginalAngle <= -360.0 || constDistance <= 0.0) {
+        int angleDif = m_angle - angle;
+        setAngle(angle);
+        QLineF line(point, mapToParent(m_maxRectForRotation.center() - m_maxRectForRotation.topLeft()));
+        line.setAngle(line.angle() - angleDif);
+        if (constDistance > 0.0) line.setLength(constDistance);
+        QPointF newPosition = line.p2();
+        move(newPosition - m_maxRectForRotation.center());
+        if (angle == 0) emit requestPositionValidation(m_id);
+    }
+
+    //Case 3: Original angle was set and valid distance was set
+
+    else {
+        double newAngleForLine = constOriginalAngle + angle;
+        setAngle(angle);
+        QLineF line;
+        line.setP1(point);
+        line.setAngle(newAngleForLine);
+        line.setLength(constDistance);
+        QPointF newPosition = line.p2();
+        move(newPosition - m_maxRectForRotation.center());
+    }
 }
 
 int JigsawPiece::angle() const
@@ -153,22 +175,12 @@ void JigsawPiece::setDragEnabled(bool val)
     m_dragEnabled = val;
 }
 
-void JigsawPiece::rotateAroundPoint(int angle, const QPointF &point)
-{
-    int angleDif = m_angle - angle;
-    setAngle(angle);
-    QLineF line(point, m_actualPosition);
-    line.setAngle(line.angle() + angleDif);
-    QPointF newPosition = line.p2();
-    move(newPosition - m_maxRectForRotation.topLeft());
-}
-
 int JigsawPiece::id() const
 {
     return m_id;
 }
 
-void JigsawPiece::calculateMaxRectForRotation()
+void JigsawPiece::expandGeometryForRotation()
 {
     int oldWidth = pixmap().size().width();
     int oldHeight = pixmap().size().height();
@@ -178,6 +190,9 @@ void JigsawPiece::calculateMaxRectForRotation()
     double offsetWidth = (newWidth - oldWidth) / 2;
     double offsetHeight = (newHeight - oldHeight) / 2;
     m_maxRectForRotation = QRectF(QPointF(-offsetWidth, -offsetHeight), QSizeF(newWidth, newHeight));
+    m_actualPosition = m_originalPosition + m_maxRectForRotation.topLeft();
+    setGeometry(m_maxRectForRotation.translated(m_originalPosition).toRect());
+    redraw();
 }
 
 void JigsawPiece::moveTimerTimeOut()
@@ -213,8 +228,9 @@ void JigsawPiece::mousePressEvent(QMouseEvent *event)
         return;
     }
     else if (event->button() == Qt::RightButton && !m_selected) {
-        m_startingAngle = m_angle + QLineF(QPointF(m_maxRectForRotation.center()), QPointF(event->pos() + m_maxRectForRotation.topLeft())).angle();
+        m_startingAngle = QLineF(m_maxRectForRotation.center(), event->pos() + m_maxRectForRotation.topLeft()).angle() - m_angle;
         m_rotated = true;
+        emit rotateStarted(m_id);
         emit rightClicked(m_id);
     }
     emit clicked(m_id);
@@ -243,7 +259,8 @@ void JigsawPiece::mouseReleaseEvent(QMouseEvent *event)
  * If you rotate a JigsawPiece, you have to right click it and keep the right button pressed down. A starting angle is calculated when you
  * right click. It takes into account the angle the JigsawPiece might already be rotated by. When you move the cursor, a new angle ist calculated
  * between the center of the JigsawPiece and the cursor position. The starting angle is subtracted from this and the JigsawPiece's angle is set
- * to the difference. The pixmap is redrawn with the new angle and the rotated signal is emitted.
+ * to the difference. The pixmap is redrawn with the new angle and the rotated() signal is emitted. The rotation takes place in steps that are
+ * defined via the MINROTATEANGLE constant, which is 10 (degrees) by default.
  */
 
 void JigsawPiece::mouseMoveEvent(QMouseEvent *event)
@@ -253,10 +270,11 @@ void JigsawPiece::mouseMoveEvent(QMouseEvent *event)
         ++m_draggedDistance;
     }
     else if (event->buttons() == Qt::RightButton && m_rotationEnabled && !m_selected) {
-        int angle = QLineF(QPointF(m_maxRectForRotation.center()), QPointF(event->pos() + m_maxRectForRotation.topLeft())).angle();
+        int angle = QLineF(m_maxRectForRotation.center(), event->pos() + m_maxRectForRotation.topLeft()).angle();
         angle -= m_startingAngle;
-        angle /= MINROTATEANGLE;
-        setAngle(-angle * MINROTATEANGLE);
+        angle %= 360;
+        if (angle < 0) angle += 360;
+        setAngle((angle / MINROTATEANGLE) * MINROTATEANGLE);
     }
 }
 
@@ -272,16 +290,12 @@ void JigsawPiece::leaveEvent(QEvent *event)
 
 void JigsawPiece::redraw()
 {
-    calculateMaxRectForRotation();
-    m_actualPosition = m_originalPosition + m_maxRectForRotation.topLeft();
-    setGeometry(m_maxRectForRotation.translated(m_originalPosition).toRect());
-
     QPixmap rotatedPixmap(m_maxRectForRotation.toRect().size());
     rotatedPixmap.fill(Qt::transparent);
 
     QTransform transform;
     transform.translate(m_maxRectForRotation.width() / 2, m_maxRectForRotation.height() / 2);
-    transform.rotate(m_angle);
+    transform.rotate(-m_angle);
     transform.translate(m_maxRectForRotation.width() / -2, m_maxRectForRotation.height() / -2);
     transform.translate(-m_maxRectForRotation.left(), -m_maxRectForRotation.top());
 

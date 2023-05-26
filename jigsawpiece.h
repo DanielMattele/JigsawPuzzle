@@ -9,10 +9,10 @@
 /*
  * The JigsawPiece class inherits JigsawLabel. You can drag and rotate a JigsawPiece by clicking on it. For the rotation
  * it is necessary to change the size of the pixmap, otherwise it would be cut off at the edges. To accomplish that,
- * a rectangle is calculated in the calculateMaxRectForRotation() function. The geometry is set to this rectangle, but
+ * a rectangle is calculated in the expandGeometryForRotation() function. The geometry is set to this rectangle, but
  * the original position is stored in a member variable. If you use the (overridden) move function, the JigsawPiece is
- * moved, as if the extended geometry wouldn't exist. Other functions of QLabel on the other hand (like pos()) might give
- * you not the values you expected, so be carefull with them.
+ * moved, as if the extended geometry wouldn't exist. Other functions of QLabel on the other hand (like pos()) might not
+ * give you the values you expected, so be carefull with them.
  *
  * There are two ways to drag a JigsawPiece: First, you can just drag it with the left mouse button pressed down. The
  * JigsawPiece is dropped when the button is released. Second, you can click on a piece and mark it as selected. It is
@@ -27,8 +27,8 @@
  * It can be used to move other JigsawPieces which are already merged in a jigsaw puzzle game.
  *
  * rotated(int id, int angle, const QPointF &rotatingPoint)
- * This signal is emitted every time the JigsawPiece is rotated. It doesn't work right now, but later it should be used to
- * rotate merged pieces with the rotateAroundPoint function.
+ * This signal is emitted every time the JigsawPiece is rotated. It should be used to rotate merged pieces with the
+ * rotateAroundPoint function.
  *
  * It is not allowed to draw text onto a JigsawPiece, so some of the functions implemented in JigsawLabel are deleted.
  */
@@ -54,7 +54,7 @@ private:
     bool m_dragEnabled;
 
     QRectF m_maxRectForRotation;
-    void calculateMaxRectForRotation();
+    void expandGeometryForRotation();
 
     QPointF m_actualPosition;
     QTimer* m_moveTimer;
@@ -109,7 +109,7 @@ public slots:
     void setRotationEnabled(bool val = true);
     void setDragEnabled(bool val = true);
 
-    void rotateAroundPoint(int angle, const QPointF &point); // works only for squares!
+    void rotateAroundPoint(int angle, const QPointF &point, double constDistance = -1.0, double constOriginalAngle = -360.0);
 
 signals:
     void clicked(int id);
@@ -120,9 +120,11 @@ signals:
     void dragStarted(int id);
     void dragStopped(int id);
     void rotated(int id, int angle, const QPointF &rotatingPoint);
+    void rotateStarted(int id);
     void rotateStopped(int id);
     void entered(int id);
     void left(int id);
+    void requestPositionValidation(int id);
 };
 
 #endif // JIGSAWPIECE_H
