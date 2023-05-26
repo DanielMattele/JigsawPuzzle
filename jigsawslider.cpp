@@ -94,14 +94,20 @@ QPoint JigsawSlider::pos() const
 
 void JigsawSlider::raise()
 {
-    QLabel::raise();
-    m_backgroundLabel->stackUnder(this);
+    QWidget::raise();
+    m_backgroundLabel->QWidget::stackUnder(this);
 }
 
 void JigsawSlider::lower()
 {
-    QLabel::lower();
-    m_backgroundLabel->stackUnder(this);
+    QWidget::lower();
+    m_backgroundLabel->QWidget::stackUnder(this);
+}
+
+void JigsawSlider::stackUnder(QWidget *w)
+{
+    QWidget::stackUnder(w);
+    m_backgroundLabel->QWidget::stackUnder(this);
 }
 
 void JigsawSlider::setPixmap(const QPixmap &newPixmap)
@@ -152,7 +158,11 @@ int JigsawSlider::val() const
 
 void JigsawSlider::setVal(int newVal)
 {
+    if (newVal < m_minVal) newVal = m_minVal;
+    if (newVal > m_maxVal) newVal = m_maxVal;
     m_val = newVal;
+    setGeometry(m_overallRect);
+    setText(QString::number(newVal));
 }
 
 int JigsawSlider::minVal() const
@@ -162,7 +172,9 @@ int JigsawSlider::minVal() const
 
 void JigsawSlider::setMinVal(int newMinVal)
 {
+    if (m_val < newMinVal) m_val = newMinVal;
     m_minVal = newMinVal;
+    setGeometry(m_overallRect);
 }
 
 int JigsawSlider::maxVal() const
@@ -172,7 +184,9 @@ int JigsawSlider::maxVal() const
 
 void JigsawSlider::setMaxVal(int newMaxVal)
 {
+    if (m_val > newMaxVal) m_val = newMaxVal;
     m_maxVal = newMaxVal;
+    setGeometry(m_overallRect);
 }
 
 const QBrush &JigsawSlider::sliderBrush() const
@@ -211,7 +225,7 @@ void JigsawSlider::paintBackgroundLabel()
     painter.drawRoundedRect(paintArea, SLIDERRADIUS, SLIDERRADIUS);
     m_backgroundLabel->setPixmap(background, true);
     m_backgroundLabel->setMask((background.mask()));
-    m_backgroundLabel->stackUnder(this);
+    m_backgroundLabel->QWidget::stackUnder(this);
 }
 
 QPointF JigsawSlider::calculateButtonPositionOffset(const QSize &buttonSize) const

@@ -6,13 +6,41 @@
 #include <QMouseEvent>
 #include <QTimer>
 
+/*
+ * The JigsawPiece class inherits JigsawLabel. You can drag and rotate a JigsawPiece by clicking on it. For the rotation
+ * it is necessary to change the size of the pixmap, otherwise it would be cut off at the edges. To accomplish that,
+ * a rectangle is calculated in the calculateMaxRectForRotation() function. The geometry is set to this rectangle, but
+ * the original position is stored in a member variable. If you use the (overridden) move function, the JigsawPiece is
+ * moved, as if the extended geometry wouldn't exist. Other functions of QLabel on the other hand (like pos()) might give
+ * you not the values you expected, so be carefull with them.
+ *
+ * There are two ways to drag a JigsawPiece: First, you can just drag it with the left mouse button pressed down. The
+ * JigsawPiece is dropped when the button is released. Second, you can click on a piece and mark it as selected. It is
+ * then moved along with the cursor. If you click it again, it is unselected and dropped. In rare cases it is possible a
+ * JigsawPiece isn't dropped if you click it again, because the cursor is not inside its borders anymore. Therefore a
+ * JigsawPiece is always dropped after a certain time (10 secs by default).
+ * 
+ * There are two important signals in this class:
+ *
+ * dragged(int id, const QPointF &draggedBy)
+ * This signal is emitted every time the JigsawPiece is dragged by one of the two ways to drag a JigsawPiece described above.
+ * It can be used to move other JigsawPieces which are already merged in a jigsaw puzzle game.
+ *
+ * rotated(int id, int angle, const QPointF &rotatingPoint)
+ * This signal is emitted every time the JigsawPiece is rotated. It doesn't work right now, but later it should be used to
+ * rotate merged pieces with the rotateAroundPoint function.
+ *
+ * It is not allowed to draw text onto a JigsawPiece, so some of the functions implemented in JigsawLabel are deleted.
+ */
+
 class JigsawPiece : public JigsawLabel
 {
     Q_OBJECT
 private:
-    const unsigned int MINDRAGDISTANCE = 5;
-    const unsigned int MINROTATEANGLE = 10;
-    const unsigned int FPS = 60;
+    static constexpr unsigned int MINDRAGDISTANCE = 5;
+    static constexpr unsigned int MINROTATEANGLE = 10;
+    static constexpr unsigned int FPS = 60;
+    static constexpr unsigned int DROPPEDAFTERMSECS = 10000;
 
     int m_id;
     bool m_selected;

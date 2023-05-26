@@ -8,13 +8,34 @@
 #include <QFont>
 #include <QPainter>
 
+/*
+ * The JigsawLabel class can be used to display Pixmaps on QLabels with individual shapes (e.g. jigsaw pieces shapes).
+ * It solves the problem, that you can't use a pixmap and text with QLabels at the same time. The text is drawn onto
+ * the pixmap, but text and pixmap are also stored in member variables, so that you can change the text and the pixmap
+ * separately. If you do so, pixmap and text are redrawn.
+ *
+ * There are two different modes to construct the JigsawLabel: Mode::PIXMAP and Mode::BRUSH. With PIXMAP the given
+ * pixmap is drawn directly onto the label. Using BRUSH yo have to setup a QPainterPath defining the borders of the
+ * JigsawLabel and a brush (which can also be a pixmap). If you use setPixmap or setJigsawPath, the mode is changed
+ * accordingly.
+ *
+ * The following functions override the QLabel functions:
+ * text()
+ * setText()
+ * pixmap()
+ * setPixmap()
+ * font()
+ * setFont()
+ *
+ * JigsawLabel is the base class for JigsawPiece and JigsawButton.
+ */
+
 class JigsawLabel : public QLabel
 {
     Q_OBJECT
 private:
-    const int DEFAULTWIDTH = 100;
-    const int DEFAULTHEIGHT = 100;
-
+    static constexpr int DEFAULTWIDTH = 100;
+    static constexpr int DEFAULTHEIGHT = 100;
 
     QString m_text;
     QPixmap m_pixmap;

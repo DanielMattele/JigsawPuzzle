@@ -187,7 +187,7 @@ void JigsawPiece::moveTimerTimeOut()
     if (draggedBy.isNull()) return;
     move(newPosition);
     emit dragged(m_id, draggedBy);
-    if (m_timerStartTime.msecsTo(QDateTime::currentDateTime()) >= 10000) {
+    if (m_timerStartTime.msecsTo(QDateTime::currentDateTime()) >= DROPPEDAFTERMSECS) {
         m_moveTimer->stop();
         m_selected = false;
         m_dragged = false;
@@ -220,6 +220,12 @@ void JigsawPiece::mousePressEvent(QMouseEvent *event)
     emit clicked(m_id);
 }
 
+/*
+ * To prevent users from accidently dragging a JigsawPiece, because they moved the cursor a little bit while they clicked, there is
+ * a minimum drag distance. You have to drag the JigsawPiece by this distance, before the piece is dropped on mouse button release.
+ * Otherwise it still is marked as selected and dragged until you click it again.
+ */
+
 void JigsawPiece::mouseReleaseEvent(QMouseEvent *event)
 {
     if (m_selected && m_dragged && m_draggedDistance >= MINDRAGDISTANCE) {
@@ -233,6 +239,12 @@ void JigsawPiece::mouseReleaseEvent(QMouseEvent *event)
     m_rotated = false;
     emit released(m_id);
 }
+/*
+ * If you rotate a JigsawPiece, you have to right click it and keep the right button pressed down. A starting angle is calculated when you
+ * right click. It takes into account the angle the JigsawPiece might already be rotated by. When you move the cursor, a new angle ist calculated
+ * between the center of the JigsawPiece and the cursor position. The starting angle is subtracted from this and the JigsawPiece's angle is set
+ * to the difference. The pixmap is redrawn with the new angle and the rotated signal is emitted.
+ */
 
 void JigsawPiece::mouseMoveEvent(QMouseEvent *event)
 {

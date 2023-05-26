@@ -4,10 +4,14 @@
 #include "jigsawlabel.h"
 #include <QMouseEvent>
 
+/*
+ * The JigsawButton class is derived from JigsawLabel and adds some of the functionality of a QPushButton. In addition, there
+ * are som simple animations you can use when the cursor enters the JigsawButton's area.
+ */
+
 class JigsawButton : public JigsawLabel
 {
     Q_OBJECT
-
 public:
     enum class AnimationType {
         DARKERONENTER,

@@ -200,6 +200,12 @@ void JigsawButton::leaveEvent(QEvent *event)
     resetPixmap();
 }
 
+/*
+ * Some animations can't be used at the same time, so every time the types are set, this function is called to eliminate
+ * the conflicts. It should be obvious, which animations can't be paired, so there is no complicated logic, which animations
+ * are deleted from the set and which are not.
+ */
+
 void JigsawButton::solveAnimationConflicts()
 {
     if (m_animationTypes.contains(AnimationType::LIGHTERONENTER)) {

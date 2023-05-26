@@ -3,13 +3,31 @@
 
 #include "jigsawbutton.h"
 
+/*
+ * The JigsawButton class is derived from JigsawLabel and adds some of the functionality of a QPushButton. In addition, there
+ * are som simple animations you can use when the cursor enters the JigsawButton's area.
+ *
+ * The JigsawSlider class is derived from JigsawButton and adds some of the functionality of a QSlider. There are two possible
+ * orientations: horizontal and vertical. When you construct a JigsawSlider, its size is defined by the pixmap. If the orientation
+ * is horizontal (the default value), the overall width is four times the buttons' width, if the orientation is vertical, the
+ * overall height is four times the buttons height. You can change that via the setGeometry function, but in this function the
+ * height (for horizontal orientation)  or width (for vertical orientation) value is ignored. If you want to change these values,
+ * you have to provide a new pixmap via setPixmap or a new (button-)size via setJigsawPath.
+ *
+ * The JigsawSlider uses a JigsawLabel for the background. It has to be stacked under the button at any time, so the raise(), lower()
+ * and stackUnder() functions of QWidget are overridden.
+ *
+ * You can set the minimum and maximum values of the JigsawSlider, as well as the actual value. If you do so, the button is repositioned.
+ * If you drag the button, the value and text changes and the signal valueChanged is emitted.
+ */
+
 class JigsawSlider : public JigsawButton
 {
     Q_OBJECT
-    const double SIZEPROPORTIONBUTTON = 0.25;
-    const int SLIDERPENWIDTH = 2;
-    const int SLIDERWIDTH = 10;
-    const int SLIDERRADIUS = 3;
+    static constexpr double SIZEPROPORTIONBUTTON = 0.25;
+    static constexpr unsigned int SLIDERPENWIDTH = 2;
+    static constexpr unsigned int SLIDERWIDTH = 10;
+    static constexpr unsigned int SLIDERRADIUS = 3;
 
 public:
     enum class Orientation {HORIZONTAL, VERTICAL};
@@ -40,6 +58,7 @@ public:
     QPoint pos() const;
     void raise();
     void lower();
+    void stackUnder(QWidget* w);
 
     void setPixmap(const QPixmap &newPixmap);
     void setJigsawPath(const QPainterPath &newJigsawPath, const QSize &newSize, const QBrush &newBrush);
