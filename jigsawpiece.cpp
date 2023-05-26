@@ -113,7 +113,8 @@ void JigsawPiece::rotateAroundPoint(int angle, const QPointF &point, double cons
 
     if (constOriginalAngle <= -360.0 || constDistance <= 0.0) {
         int angleDif = m_angle - angle;
-        setAngle(angle);
+        m_angle = angle;
+        redraw();
         QLineF line(point, mapToParent(m_maxRectForRotation.center() - m_maxRectForRotation.topLeft()));
         line.setAngle(line.angle() - angleDif);
         if (constDistance > 0.0) line.setLength(constDistance);
@@ -126,7 +127,8 @@ void JigsawPiece::rotateAroundPoint(int angle, const QPointF &point, double cons
 
     else {
         double newAngleForLine = constOriginalAngle + angle;
-        setAngle(angle);
+        m_angle = angle;
+        redraw();
         QLineF line;
         line.setP1(point);
         line.setAngle(newAngleForLine);
@@ -178,6 +180,11 @@ void JigsawPiece::setDragEnabled(bool val)
 int JigsawPiece::id() const
 {
     return m_id;
+}
+
+QPointF JigsawPiece::center() const
+{
+    return mapToParent(m_maxRectForRotation.center() - m_maxRectForRotation.topLeft());
 }
 
 void JigsawPiece::expandGeometryForRotation()

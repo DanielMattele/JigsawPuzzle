@@ -10,11 +10,11 @@
 #include "jigsawslider.h"
 #include "imageeffect.h"
 #include <QRadioButton>
+#include <QCheckBox>
 #include <QWidget>
 #include <QTimer>
 #include <QPainterPath>
 #include <QLabel>
-#include <QThread>
 
 struct Parameters {
     int screenWidth = 1920;
@@ -111,6 +111,7 @@ private:
     void repositionPiece(JigsawPiece* piece, JigsawPiece* neighbor);
 
     int m_numberOfPieces;
+    bool m_rotationAllowed;
 
     void calculateRowsAndCols(int numberOfPieces, const QPixmap &image);
 
@@ -123,15 +124,6 @@ private:
     int m_pieceHeight;
 
     PuzzleGrid *m_grid;
-
-    int m_fps;
-    QTimer *m_movingTimer;
-    QPoint m_buttonCursorOffset;
-    JigsawPiece *m_selectedPiece;
-    int m_selectedMergedPiece;
-
-    int randomOffset(unsigned int range) const;
-    void setDefaultValues();
 
     void setupImage();
 
@@ -159,6 +151,7 @@ private:
 
     QVector<QRadioButton*> m_radioButtonEx;
     QVector<QRadioButton*> m_radioButtonPuzzlePiece;
+    QCheckBox* m_rotationAllowedCheckBox;
     JigsawButton* m_ownImageLabel;
     QString m_filename;
     JigsawSlider* m_sliderButton;
@@ -198,6 +191,7 @@ private slots:
     void newWidgetOwnImageClicked();
 
     void dragMergedPieces(int id, const QPointF &draggedBy);
+    void rotateMergedPieces(int id, int angle, const QPointF &rotatingPoint);
     void raisePieces(int id);
     void fixPieceIfPossible(int id);
     void fixMergedPieceIfPossible(int id);

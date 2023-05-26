@@ -104,6 +104,7 @@ public:
     bool dragIsEnabled() const;
 
     int id() const;
+    QPointF center() const;
 
 public slots:
     void setRotationEnabled(bool val = true);

@@ -31,7 +31,6 @@ void PuzzleWidget::combineTwoMergedPieces(int firstMergedPieceID, int secondMerg
 {
     m_mergedPieces[firstMergedPieceID] += m_mergedPieces[secondMergedPieceID];
     m_mergedPieces.removeAt(secondMergedPieceID);
-    if (secondMergedPieceID < firstMergedPieceID) m_selectedMergedPiece = --firstMergedPieceID;
 }
 
 bool PuzzleWidget::isPartOfMergedPiece(JigsawPiece *piece, int &mergedPieceID)
@@ -62,6 +61,7 @@ void PuzzleWidget::fixPieceIfPossible(int id)
     JigsawPiece* piece = m_puzzlePieces[id];
     piece->lower();
     m_background->lower();
+
     int pieceNorthID = id - m_cols;
     int pieceEastID = (id + 1) % m_cols == 0 ? -1 : id + 1;
     int pieceSouthID = (id + m_cols >= m_numberOfPieces) ? -1 : id + m_cols;
@@ -122,25 +122,25 @@ bool PuzzleWidget::isInCorrectPosition(JigsawPiece *piece, JigsawPiece *neighbor
 
     QPoint pieceGridPoint = m_grid->overlayGridPoint(piece->id());
     QPoint neighborGridPoint = m_grid->overlayGridPoint(neighbor->id());
-    QPoint gridPointOffset = pieceGridPoint - neighborGridPoint;
 
-    QPointF piecePosition = piece->originalPosition();
-    QPointF pieceNorthPosition = neighbor->originalPosition();
-    QPointF pieceOffset = piecePosition - pieceNorthPosition;
+    QLineF gridLine(pieceGridPoint, neighborGridPoint);
+    QLineF positionLine;
+    positionLine.setP1(piece->center());
+    positionLine.setAngle(gridLine.angle() + piece->angle());
+    positionLine.setLength(gridLine.length());
 
-    QPointF positionDifference = gridPointOffset - pieceOffset;
-    double distance = positionDifference.manhattanLength();
+    QLineF positionDifference(positionLine.p2(), neighbor->center());
+    double distance = positionDifference.length();
 
-    return distance <= tolerance;
+    return distance <= tolerance && piece->angle() == neighbor->angle();
 }
 
 void PuzzleWidget::repositionPiece(JigsawPiece *piece, JigsawPiece *neighbor)
 {
     QPoint pieceGridPoint = m_grid->overlayGridPoint(piece->id());
     QPoint neighborGridPoint = m_grid->overlayGridPoint(neighbor->id());
-    QPoint gridPointOffset = pieceGridPoint - neighborGridPoint;
-    QPointF correctPosition = neighbor->originalPosition() + gridPointOffset;
-    piece->move(correctPosition);
+    QLineF line(neighborGridPoint, pieceGridPoint);
+    piece->rotateAroundPoint(neighbor->angle(), neighbor->center(), line.length(), line.angle());
 }
 
 void PuzzleWidget::calculateRowsAndCols(int numberOfPieces, const QPixmap &image)
@@ -173,27 +173,6 @@ void PuzzleWidget::calculateRowsAndCols(int numberOfPieces, const QPixmap &image
     m_pieceHeight = actualImageSize.height() / rows;
 }
 
-int PuzzleWidget::randomOffset(unsigned int range) const
-{
-    std::random_device rd;
-    std::mt19937 g(rd());
-    int result = (g() % range) - range / 2;
-    return result;
-}
-
-void PuzzleWidget::setDefaultValues()
-{
-    m_rows = 5;
-    m_cols = 7;
-    m_numberOfPieces = m_rows * m_cols;
-    m_typeOfPiece = TypeOfPiece::TRAPEZOID;
-
-    m_pieceWidth = 80;
-    m_pieceHeight = 80;
-
-    m_fps = 60;
-}
-
 void PuzzleWidget::setupImage()
 {
     QSize overlaySize(m_grid->puzzleTotalSize());
@@ -213,10 +192,13 @@ void PuzzleWidget::generatePuzzlePieces()
 {
     for (unsigned int i = 0; i < m_numberOfPieces; ++i) {
         m_puzzlePieces.push_back(new JigsawPiece(i, m_grid->pieceTotalSize(), QBrush(createImageFragment(i)), m_grid->puzzlePath(i), this));
-        m_puzzlePieces.last()->setRotationEnabled(false);
+        m_puzzlePieces.last()->setRotationEnabled(m_rotationAllowed);
+         if (m_rotationAllowed) m_puzzlePieces.last()->setAngle(PuzzleGrid::randomNumber(0, 35) * 10);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragStarted, this, &PuzzleWidget::raisePieces);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragged, this, &PuzzleWidget::dragMergedPieces);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragStopped, this, &PuzzleWidget::fixPieceIfPossible);
+        QObject::connect(m_puzzlePieces.last(), &JigsawPiece::rotateStarted, this, &PuzzleWidget::raisePieces);
+        QObject::connect(m_puzzlePieces.last(), &JigsawPiece::rotated, this, &PuzzleWidget::rotateMergedPieces);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::rotateStopped, this, &PuzzleWidget::fixPieceIfPossible);
     }
 }
@@ -462,7 +444,11 @@ void PuzzleWidget::setNewWidgetNumberOfPiecesWidget(QWidget *parent, const Param
 
     QLabel* caption = new QLabel("Number of pieces:", widgetNumberOfPieces);
     caption->setFont(m_parameters.mainFont);
-    caption->setGeometry(QRect(QPoint(par.minBorderWidth, par.minBorderWidth), QSize(par.widthWidgetNumberOfPieces - par.minBorderWidth * 2, par.heightWidgetNumberOfPieces / 4 - par.minBorderWidth * 2)));
+    caption->setGeometry(QRect(QPoint(par.minBorderWidth, par.minBorderWidth), QSize(par.widthWidgetNumberOfPieces / 2 - par.minBorderWidth * 2, par.heightWidgetNumberOfPieces / 4 - par.minBorderWidth * 2)));
+
+    m_rotationAllowedCheckBox = new QCheckBox("Allow Rotation", widgetNumberOfPieces);
+    m_rotationAllowedCheckBox->setFont(m_parameters.mainFont);
+    m_rotationAllowedCheckBox->setGeometry(QRect(QPoint(par.minBorderWidth + par.widthWidgetNumberOfPieces / 2, par.minBorderWidth), QSize(par.widthWidgetNumberOfPieces / 2 - par.minBorderWidth * 2, par.heightWidgetNumberOfPieces / 4 - par.minBorderWidth * 2)));
 
     QPainterPath path = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), par.sizeButtonOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
 
@@ -543,11 +529,7 @@ void PuzzleWidget::setCreateOwnShapeWidget()
 PuzzleWidget::PuzzleWidget(QWidget *parent)
     : QWidget{parent}
     , m_background(new QLabel(this))
-    , m_movingTimer(new QTimer(this))
-    , m_selectedPiece(nullptr)
-    , m_selectedMergedPiece(-1)
 {
-    setDefaultValues();
     m_background->setGeometry(QRect(this->pos(), QSize(1920, 1080)));
     m_background->setScaledContents(true);
     m_background->setPixmap(QPixmap(":/backgrounds/back1"));
@@ -645,10 +627,8 @@ void PuzzleWidget::newWidgetOkClicked()
     m_puzzlePieces.clear();
     m_mergedPieces.clear();
 
-    m_selectedPiece = nullptr;
-    m_selectedMergedPiece = -1;
-
     calculateRowsAndCols(m_sliderButton->val(), m_image);
+    m_rotationAllowed = m_rotationAllowedCheckBox->isChecked();
 
     setupPuzzle();
     m_newWidget->lower();
@@ -659,7 +639,7 @@ void PuzzleWidget::newWidgetOkClicked()
 
 void PuzzleWidget::newWidgetOwnImageClicked()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Open Image", "C:/", "Image Files (*.png *.jpg *.bmp)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Open Image", m_filename.isEmpty() ? "C:/": m_filename.section('/', 0, -2), "Image Files (*.png *.jpg *.bmp)");
     if (!fileName.isEmpty() && fileName != "" && !QPixmap(fileName).isNull()) {
         m_filename = fileName;
         m_radioButtonEx.last()->setCheckable(true);
@@ -677,6 +657,21 @@ void PuzzleWidget::dragMergedPieces(int id, const QPointF &draggedBy)
     if (isPartOfMergedPiece(m_puzzlePieces[id], mergedPieceID)) {
         for (const auto &piece : m_mergedPieces[mergedPieceID]) {
             if (piece != m_puzzlePieces[id]) piece->move(piece->originalPosition() + draggedBy);
+        }
+    }
+}
+
+void PuzzleWidget::rotateMergedPieces(int id, int angle, const QPointF &rotatingPoint)
+{
+    int mergedPieceID;
+    if (isPartOfMergedPiece(m_puzzlePieces[id], mergedPieceID)) {
+        for (const auto &piece : m_mergedPieces[mergedPieceID]) {
+            if (piece != m_puzzlePieces[id]) {
+                QPoint pieceGridPoint = m_grid->overlayGridPoint(id);
+                QPoint neighborGridPoint = m_grid->overlayGridPoint(piece->id());
+                QLineF line(pieceGridPoint, neighborGridPoint);
+                piece->rotateAroundPoint(angle, rotatingPoint, line.length(), line.angle());
+            }
         }
     }
 }
