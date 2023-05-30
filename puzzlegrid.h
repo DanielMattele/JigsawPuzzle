@@ -15,6 +15,14 @@ enum class Direction {
     BOTTOMRIGHT
 };
 
+/*
+ * This class calculates the coordinates for the corners of the JigsawPieces as well as the JigsawPaths. The image
+ * you want to turn into a jigsaw puzzle is cut into small rectangles, but each of these rectangles has to be bigger
+ * than the image width divided by the number of pieces in one row or column. Otherwise the image fragment would be
+ * cut of at the edges. To achieve this, the class calculates a grid with some overlay. Inside this overlay, a grid
+ * point is chosen randomly. After that, all JigsawPaths are calculated.
+ */
+
 class PuzzleGrid : public QObject
 {
     Q_OBJECT

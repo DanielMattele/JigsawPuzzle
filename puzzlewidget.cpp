@@ -515,7 +515,7 @@ void PuzzleWidget::wonGame()
     for (const auto &puzzlePiece : m_puzzlePieces) {
         puzzlePiece->hide();
     }
-    ImageEffect* effect = new ImageEffect(m_background, m_image, ImageEffect::TypeOfEffect::GROW, this, 3000);
+    ImageEffect* effect = new ImageEffect(m_background, QPixmap(m_filename), ImageEffect::TypeOfEffect::GROW, this, 3000);
     QObject::connect(effect, &ImageEffect::effectFinished, m_wonWidget, &QWidget::show);
     effect->run();
 }

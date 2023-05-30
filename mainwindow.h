@@ -4,6 +4,10 @@
 #include "puzzlewidget.h"
 #include <QMainWindow>
 
+/*
+ * @Julia: Nur interessant für Qt, beachte diese Klasse einfach nicht.
+ */
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE

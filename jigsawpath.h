@@ -19,6 +19,14 @@ enum class TypeOfPiece
     count
 };
 
+/*
+ * The JigsawPath class creates the different shapes of the jigsaw pieces. These different shapes can be chosen via the
+ * enum class TypeOfPiece. Every type of piece (except the trapezoid piece) has some random element to it. The function
+ * generatePath() generates a path which lies completely inside the given bounds. This function is repeated with different
+ * random numbers until a valid path is found or a limit for max attempts is reached. In that case, a simpler path is drawn.
+ * There is the possibility of creating a custom path via an editor, but this function isn't fully implemented yet.
+ */
+
 class JigsawPath
 {
 public:
@@ -45,6 +53,12 @@ public:
     static int typeOfPieceToInt(TypeOfPiece type);
     static QString tooltip(TypeOfPiece type);
 
+
+    /*
+     * This function creates a single jigsaw border. It can be used, for example, to create the shape of a JigsawButton. You can either
+     * submit the inner bounds (where the textarea is) yourself or use the recommended inner bounds. They guarantee that the function has enough
+     * room between outer and inner bounds to find valid paths.
+     */
     static QPainterPath singleJigsawPiecePath(const QRect &outerBounds, const QRect &innerBounds, TypeOfPiece typeOfPiece,
                                               int minForcedPaths = 2, bool useRecommendedInnerBounds = false,
                                               const CustomJigsawPath &customPath = CustomJigsawPath());

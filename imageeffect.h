@@ -8,6 +8,11 @@
 #include <QLabel>
 #include <random>
 
+/*
+ * This class creates the effect for the image you see, when you finish a jigsaw puzzle. It has
+ * a slot run() and a signal effectFinished(), so it is possible to run it on a different thread.
+ */
+
 class ImageEffect : public QObject
 {
     Q_OBJECT
@@ -55,7 +60,7 @@ private slots:
     void fadeInTimeout();
 
 signals:
-    void effectFinished();
+    void effectFinished(bool successful);
 
 };
 

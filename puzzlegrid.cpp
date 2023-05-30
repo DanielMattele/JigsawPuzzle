@@ -303,6 +303,12 @@ void PuzzleGrid::createGridPaths(TypeOfPiece typeOfPiece)
         boundsForPath = boundsFirstPiece.intersected(boundsSecondPiece);
         type = (isOnLeftBorder(j) || isOnRightBorder(j)) ? TypeOfPiece::TRAPEZOID : typeOfPiece;
 
+        /*
+         * It is possible for two adjacent JigsawPaths to intersect each other without violating their borders. In
+         * that case, new attempts are made, until the intersection is solved, or a limit of attempts is reached.
+         * If no path can be found, a simpler type of piece is chosen for that single path.
+         */
+
         do {
             m_verticalGridPaths[j] = JigsawPath(start, end, boundsForPath, type).path();
 

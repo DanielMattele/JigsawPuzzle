@@ -4,6 +4,13 @@
 #include <QPainterPath>
 #include <QPoint>
 
+/*
+ * The CustomJigsawPath class is used to store the user's inputs from the editor. Since the editor
+ * isn't finished yet, this class also is incomplete.
+ *
+ * @Julia: Beachte diese Klasse einfach nicht.
+ */
+
 class CustomJigsawPath
 {
 public:

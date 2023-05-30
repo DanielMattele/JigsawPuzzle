@@ -29,7 +29,10 @@ ImageEffect::~ImageEffect()
 
 void ImageEffect::run()
 {
-    if (m_target == nullptr || m_source.isNull() || qFuzzyIsNull(m_duration)) return;
+    if (m_target == nullptr || m_source.isNull() || qFuzzyIsNull(m_duration)) {
+        emit effectFinished(false);
+        return;
+    }
 
     m_targetSize = m_target->size();
     m_source = m_source.scaled(m_targetSize, Qt::KeepAspectRatio);
@@ -110,7 +113,7 @@ void ImageEffect::growTimeout()
 {
     if (m_percentagPerTimeout * m_counter >= 1.0) {
         m_timer->stop();
-        emit effectFinished();
+        emit effectFinished(true);
         return;
     }
     QPainter painter(&m_unfinishedPixmap);
@@ -125,7 +128,7 @@ void ImageEffect::fadeInTimeout()
 {
     if (m_percentagPerTimeout * m_counter >= 1.0) {
         m_timer->stop();
-        emit effectFinished();
+        emit effectFinished(true);
         return;
     }
     QPainter painter(&m_unfinishedPixmap);

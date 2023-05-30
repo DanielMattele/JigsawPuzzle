@@ -16,6 +16,13 @@
 #include <QPainterPath>
 #include <QLabel>
 
+// @Julia: Das ist die Hauptklasse. Ignoriere das struct und scrolle runter bis zur class PuzzleWidget. Viel Spaß!
+
+/*
+ * The struct Parameters defines some of the default values of the game. In the future, some parameters might be set via
+ * the settings button in the menu (doesn't exist yet).
+ */
+
 struct Parameters {
     int screenWidth = 1920;
     int screenHeight = 1080;
@@ -90,6 +97,14 @@ struct Parameters {
 
     QFont mainFont = QFont("Georgia", 16, QFont::Bold);
 };
+
+/*
+ * The PuzzleWidget class is the core of the jigsaw puzzle game. You can load your own image or choose one of
+ * the examples to turn it into a jigsaw puzzle. You can choose the shape and the number of your pieces and
+ * whether you want them to be rotatable or not. In the GUI, the pieces can be dragged (or rotated) by clicking
+ * them. When you put two pieces close enough together, they are merged and will be dragged (or rotated) together
+ * from here on. The game is finished, when all pieces are merged.
+ */
 
 class PuzzleWidget : public QWidget
 {

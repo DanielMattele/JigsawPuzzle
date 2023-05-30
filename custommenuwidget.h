@@ -6,6 +6,12 @@
 #include "jigsawpath.h"
 #include <QWidget>
 
+/*
+ * This class simply provides a widget with signals, when you enter and leave it. It is not essential for the jigsaw puzzle.
+ *
+ * @Julia: Nur interessant für Qt, beachte diese Klasse einfach nicht.
+ */
+
 class CustomMenuWidget : public QWidget
 {
     Q_OBJECT
