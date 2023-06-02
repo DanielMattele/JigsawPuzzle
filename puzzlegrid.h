@@ -32,6 +32,7 @@ private:
     int m_numberOfGridPoints;
     int m_numberOfPieces;
     TypeOfPiece m_typeOfPiece;
+    CustomJigsawPath m_customPath;
 
     int currentRow(int pointID) const;
     int currentCol(int pointID) const;
@@ -91,7 +92,7 @@ private:
     void debugGrid();
 
 public:
-    explicit PuzzleGrid(int rowsOfPieces, int colsOfPieces, int puzzlePiecesWidth, int puzzlePiecesHeight, TypeOfPiece typeOfPiece, QObject *parent = nullptr);
+    explicit PuzzleGrid(int rowsOfPieces, int colsOfPieces, int puzzlePiecesWidth, int puzzlePiecesHeight, TypeOfPiece typeOfPiece, QObject *parent = nullptr, const CustomJigsawPath &customPath = CustomJigsawPath());
     ~PuzzleGrid();
 
     QPoint symmetricGridPoint(int pieceID, Direction direction = Direction::TOPLEFT) const;

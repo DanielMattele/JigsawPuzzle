@@ -47,6 +47,11 @@ set(PROJECT_SOURCES
 
         imageeffect.h
         imageeffect.cpp
+
+        customjigsawpathcreator.h
+        customjigsawpathcreator.cpp
+        creatorcanvas.cpp
+        creatorcanvas.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

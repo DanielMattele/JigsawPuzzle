@@ -287,7 +287,7 @@ void PuzzleGrid::createGridPaths(TypeOfPiece typeOfPiece)
         boundsForPath = boundsFirstPiece.intersected(boundsSecondPiece);
         type = (isOnTopBorder(i) || isOnBottomBorder(i)) ? TypeOfPiece::TRAPEZOID : typeOfPiece;
 
-        m_horizontalGridPaths[i] = JigsawPath(start, end, boundsForPath, type).path();
+        m_horizontalGridPaths[i] = JigsawPath(start, end, boundsForPath, type, m_customPath).path();
     }
 
     for (unsigned int j = 0; j < m_verticalGridPaths.size(); ++j) {
@@ -310,7 +310,7 @@ void PuzzleGrid::createGridPaths(TypeOfPiece typeOfPiece)
          */
 
         do {
-            m_verticalGridPaths[j] = JigsawPath(start, end, boundsForPath, type).path();
+            m_verticalGridPaths[j] = JigsawPath(start, end, boundsForPath, type, m_customPath).path();
 
             hasCollision = (!isOnRightBorder(j)
                                 && ((m_verticalGridPaths[j].intersected(m_horizontalGridPaths[j])).elementCount() > 0
@@ -390,13 +390,14 @@ void PuzzleGrid::debugGrid()
     }
 }
 
-PuzzleGrid::PuzzleGrid(int rowsOfPieces, int colsOfPieces, int puzzlePiecesWidth, int puzzlePiecesHeight, TypeOfPiece typeOfPiece, QObject *parent)
+PuzzleGrid::PuzzleGrid(int rowsOfPieces, int colsOfPieces, int puzzlePiecesWidth, int puzzlePiecesHeight, TypeOfPiece typeOfPiece, QObject *parent, const CustomJigsawPath &customPath)
     : QObject{parent}
     , m_rows(rowsOfPieces + 1)
     , m_cols(colsOfPieces + 1)
     , m_numberOfGridPoints(m_rows * m_cols)
     , m_numberOfPieces(rowsOfPieces * colsOfPieces)
     , m_typeOfPiece(typeOfPiece)
+    , m_customPath(customPath)
     , m_puzzlePiecesWidth(puzzlePiecesWidth)
     , m_puzzlePiecesHeight(puzzlePiecesHeight)
     , m_horizontalOverlap(0)

@@ -1,6 +1,7 @@
 #ifndef PUZZLEWIDGET_H
 #define PUZZLEWIDGET_H
 
+#include "customjigsawpathcreator.h"
 #include "custommenuwidget.h"
 #include "jigsawpath.h"
 #include "puzzlegrid.h"
@@ -134,6 +135,7 @@ private:
     int m_cols;
     QPixmap m_image;
     TypeOfPiece m_typeOfPiece;
+    CustomJigsawPath m_customJigsawPath;
 
     int m_pieceWidth;
     int m_pieceHeight;
@@ -168,6 +170,7 @@ private:
     QVector<QRadioButton*> m_radioButtonPuzzlePiece;
     QCheckBox* m_rotationAllowedCheckBox;
     JigsawButton* m_ownImageLabel;
+    JigsawButton* m_ownShapeLabel;
     QString m_filename;
     JigsawSlider* m_sliderButton;
 
@@ -183,6 +186,7 @@ private:
     void wonGame();
 
     QWidget* m_createOwnShapeWidget;
+    CustomJigsawPathCreator* m_customJigsawPathCreator;
 
     void setCreateOwnShapeWidget();
 
@@ -204,6 +208,7 @@ private slots:
     void quitWidgetYesClicked();
     void newWidgetOkClicked();
     void newWidgetOwnImageClicked();
+    void customJigsawPathCreatorApplyClicked(const CustomJigsawPath &customJigsawPath);
 
     void dragMergedPieces(int id, const QPointF &draggedBy);
     void rotateMergedPieces(int id, int angle, const QPointF &rotatingPoint);

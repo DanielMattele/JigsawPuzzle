@@ -428,9 +428,9 @@ void PuzzleWidget::setNewWidgetPuzzlePieceWidget(QWidget *parent, const Paramete
         QObject::connect(labelPuzzlePiece[i], &JigsawButton::clicked, m_radioButtonPuzzlePiece[i], &QRadioButton::toggle);
     }
     m_radioButtonPuzzlePiece[JigsawPath::typeOfPieceToInt(TypeOfPiece::STANDARD)]->setChecked(true);
-
-    m_radioButtonPuzzlePiece.last()->setCheckable(false);
-    QObject::connect(m_radioButtonPuzzlePiece.last(), &QRadioButton::toggled, m_createOwnShapeWidget, &QWidget::show);
+    m_ownShapeLabel = labelPuzzlePiece.last();
+    QObject::connect(labelPuzzlePiece.last(), &JigsawButton::clicked, m_createOwnShapeWidget, &QWidget::show);
+    QObject::connect(labelPuzzlePiece.last(), &JigsawButton::clicked, m_createOwnShapeWidget, &QWidget::raise);
     QFont font("Georgia", 32, QFont::Bold);
     labelPuzzlePiece.last()->setText("?");
     labelPuzzlePiece.last()->setTextArea(labelPuzzlePiece.last()->rect());
@@ -523,6 +523,18 @@ void PuzzleWidget::wonGame()
 void PuzzleWidget::setCreateOwnShapeWidget()
 {
     m_createOwnShapeWidget = new QWidget(this);
+    m_createOwnShapeWidget->setGeometry(0, 0, m_parameters.screenWidth, m_parameters.screenHeight);
+    QLabel* background = new QLabel(m_createOwnShapeWidget);
+    background->setGeometry(0, 0, m_parameters.screenWidth, m_parameters.screenHeight);
+    QPixmap backgroundPixmap(QSize(m_parameters.screenWidth, m_parameters.screenHeight));
+    backgroundPixmap.fill(Qt::lightGray);
+    background->setPixmap(backgroundPixmap);
+    m_customJigsawPathCreator = new CustomJigsawPathCreator(m_createOwnShapeWidget);
+    m_customJigsawPathCreator->setGeometry(0, 0, m_parameters.screenWidth, m_parameters.screenHeight);
+    m_customJigsawPathCreator->raise();
+
+    QObject::connect(m_customJigsawPathCreator, &CustomJigsawPathCreator::apply, this, &PuzzleWidget::customJigsawPathCreatorApplyClicked);
+
     m_createOwnShapeWidget->hide();
 }
 
@@ -549,7 +561,7 @@ void PuzzleWidget::loadImage(const QPixmap &image)
 
 void PuzzleWidget::setupPuzzle()
 {
-    m_grid = new PuzzleGrid(m_rows, m_cols, m_pieceWidth, m_pieceHeight, m_typeOfPiece, this);
+    m_grid = new PuzzleGrid(m_rows, m_cols, m_pieceWidth, m_pieceHeight, m_typeOfPiece, this, m_customJigsawPath);
     setupImage();
     generatePuzzlePieces();
     placePuzzlePieces();
@@ -649,6 +661,17 @@ void PuzzleWidget::newWidgetOwnImageClicked()
         m_ownImageLabel->setText("");
         loadImage(QPixmap(fileName));
     }
+}
+
+void PuzzleWidget::customJigsawPathCreatorApplyClicked(const CustomJigsawPath &customJigsawPath)
+{
+    m_customJigsawPath = customJigsawPath;
+
+//    QPainterPath customPath = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), m_ownShapeLabel->size()), QRect(QPoint(0, 0),
+//                                                                m_ownShapeLabel->size() / 2), TypeOfPiece::CUSTOM, 4, false, customJigsawPath);
+//    m_ownShapeLabel->setJigsawPath(customPath, m_ownShapeLabel->size());
+
+    m_createOwnShapeWidget->hide();
 }
 
 void PuzzleWidget::dragMergedPieces(int id, const QPointF &draggedBy)

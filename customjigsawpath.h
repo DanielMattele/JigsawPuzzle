@@ -5,10 +5,7 @@
 #include <QPoint>
 
 /*
- * The CustomJigsawPath class is used to store the user's inputs from the editor. Since the editor
- * isn't finished yet, this class also is incomplete.
- *
- * @Julia: Beachte diese Klasse einfach nicht.
+ * The CustomJigsawPath class is used to store the user's inputs from the editor.
  */
 
 class CustomJigsawPath
@@ -144,10 +141,14 @@ public:
     QPointF* positionControlPoint(int index);
     int numberOfPoints() const;
 
+    CustomJigsawPath getRandomizedPath() const;
+
     static void changeDistanceFromLine(QPointF &pointToChange, const QLineF &line, double newDistance);
 
 private:
     QVector<CustomJigsawPath::PathPoint> m_pathPoints;
+
+    int randomNumber(int min, int max) const;
 };
 
 #endif // CUSTOMJIGSAWPATH_H

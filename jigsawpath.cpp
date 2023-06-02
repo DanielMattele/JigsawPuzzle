@@ -556,13 +556,15 @@ bool JigsawPath::generateStandardFunnyPath()
 
 bool JigsawPath::generateCustomPath()
 {
+    CustomJigsawPath customPathTemp;
+    if (m_noRandom) customPathTemp = m_customPath;
 
     QLineF lineStartToEnd(m_start, m_end);
-    double lenghtStartToEnd = lineStartToEnd.length();
+    double lengthStartToEnd = lineStartToEnd.length();
     double angleStartToEnd = lineStartToEnd.angle();
 
     QLineF customLineStartToEnd(m_customPath.pathPoint(0).position, m_customPath.pathPoint(m_customPath.numberOfPoints() - 1).position);
-    double customLenghtStartToEnd = customLineStartToEnd.length();
+    double customLengthStartToEnd = customLineStartToEnd.length();
 
     QVector<QPointF> actualPathPoints;
     actualPathPoints.push_back(m_start);
@@ -578,61 +580,27 @@ bool JigsawPath::generateCustomPath()
         side = randomNumber(1, 2);
         side = (side == 1) ? 1 : -1;
         if (m_noRandom) side = 1;
+        else customPathTemp = m_customPath.getRandomizedPath();
 
-        for (int i = 1; i < m_customPath.numberOfPoints(); ++i) {
-            QLineF customLineStartToPathPoint(m_customPath.pathPoint(0).position, m_customPath.pathPoint(i).position);
+        for (int i = 1; i < customPathTemp.numberOfPoints(); ++i) {
+            QLineF customLineStartToPathPoint(customPathTemp.pathPoint(0).position, customPathTemp.pathPoint(i).position);
             double angle = angleStartToEnd + customLineStartToEnd.angleTo(customLineStartToPathPoint) * side;
-            double length = customLineStartToPathPoint.length() / customLenghtStartToEnd * lenghtStartToEnd;
+            double length = customLineStartToPathPoint.length() / customLengthStartToEnd * lengthStartToEnd;
             QLineF lineStartToActualPathPoint;
             lineStartToActualPathPoint.setP1(m_start);
             lineStartToActualPathPoint.setAngle(angle);
             lineStartToActualPathPoint.setLength(length);
             QPointF actualPathPoint = lineStartToActualPathPoint.p2();
-            QLineF lineActualPathPointToRandomOffset;
-
-            if (!m_noRandom) {
-                switch (m_customPath.pathPoint(i).randomOffset.type) {
-                case CustomJigsawPath::TypeOfRandomOffset::NONE:
-                    break;
-                case CustomJigsawPath::TypeOfRandomOffset::CIRCULAR:
-                    lineActualPathPointToRandomOffset.setP1(actualPathPoint);
-                    lineActualPathPointToRandomOffset.setAngle(randomNumber(0, 359));
-                    lineActualPathPointToRandomOffset.setLength(randomNumber(0, m_customPath.pathPoint(i).randomOffset.value) * lenghtStartToEnd / 100);
-                    actualPathPoint = lineActualPathPointToRandomOffset.p2();
-                    break;
-                case CustomJigsawPath::TypeOfRandomOffset::LINE:
-                    break;
-                }
-            }
-
             actualPathPoints.push_back(actualPathPoint);
 
-            QLineF customLineStartToControlPoint(m_customPath.pathPoint(0).position, m_customPath.pathPoint(i).positionControlPoint);
+            QLineF customLineStartToControlPoint(customPathTemp.pathPoint(0).position, customPathTemp.pathPoint(i).positionControlPoint);
             angle = angleStartToEnd + customLineStartToEnd.angleTo(customLineStartToControlPoint) * side;
-            length = customLineStartToControlPoint.length() / customLenghtStartToEnd * lenghtStartToEnd;
+            length = customLineStartToControlPoint.length() / customLengthStartToEnd * lengthStartToEnd;
             QLineF lineStartToActualControlPoint;
             lineStartToActualControlPoint.setP1(m_start);
             lineStartToActualControlPoint.setAngle(angle);
             lineStartToActualControlPoint.setLength(length);
-
             QPointF actualControlPoint = lineStartToActualControlPoint.p2();
-            QLineF lineActualControlPointToRandomOffset;
-
-            if (!m_noRandom) {
-                switch (m_customPath.pathPoint(i).randomOffset.type) {
-                case CustomJigsawPath::TypeOfRandomOffset::NONE:
-                    break;
-                case CustomJigsawPath::TypeOfRandomOffset::CIRCULAR:
-                    lineActualControlPointToRandomOffset.setP1(actualPathPoint);
-                    lineActualControlPointToRandomOffset.setAngle(randomNumber(0, 359));
-                    lineActualControlPointToRandomOffset.setLength(randomNumber(0, m_customPath.pathPoint(i).randomOffsetControlPoint.value) * lenghtStartToEnd / 100);
-                    actualControlPoint = lineActualControlPointToRandomOffset.p2();
-                    break;
-                case CustomJigsawPath::TypeOfRandomOffset::LINE:
-                    break;
-                }
-            }
-
             actualControlPoints.push_back(actualControlPoint);
         }
 
@@ -659,8 +627,6 @@ bool JigsawPath::generateCustomPath()
         if (m_debug) qDebug() << "Path generated at attemp" << emergencyCounter;
         return true;
     }
-
-    //not finished!!!
 }
 
 bool JigsawPath::pathHasCollisions(const JigsawPath &jigsawPath, const QVector<JigsawPath> &collisionPaths)
