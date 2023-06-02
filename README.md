@@ -10,3 +10,5 @@ This game was developed using Qt Creator 7.0.0, based on Qt 6.2.3 (MSVC 2019, 64
 You can watch a game here:
 
 https://github.com/DanielMattele/JigsawPuzzle/assets/103319391/fc859b9c-0f28-40de-989b-84424ca8b641
+
+https://github.com/DanielMattele/JigsawPuzzle/assets/103319391/b0c01e73-104f-4107-8ac4-4fd081e259fd
