@@ -52,6 +52,8 @@ set(PROJECT_SOURCES
         customjigsawpathcreator.cpp
         creatorcanvas.cpp
         creatorcanvas.h
+
+        README.md
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
