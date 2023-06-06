@@ -184,21 +184,21 @@ void PuzzleGrid::createPuzzlePiecesGrid()
             verticalOffset = 0;
         }
         else {
-            verticalOffset = randomNumber(- m_verticalOverlap / 2, m_verticalOverlap / 2);
+            verticalOffset = Jigsaw::randomNumber(- m_verticalOverlap / 2, m_verticalOverlap / 2);
         }
 
         if (isOnTopBorder(i) || isOnBottomBorder(i)) {
             horizontalOffset = 0;
         }
         else {
-            horizontalOffset = randomNumber(- m_horizontalOverlap / 2, m_horizontalOverlap / 2);
+            horizontalOffset = Jigsaw::randomNumber(- m_horizontalOverlap / 2, m_horizontalOverlap / 2);
         }
 
         m_puzzlePiecesGrid[i] = (m_symmetricGrid[i] + QPoint(verticalOffset, horizontalOffset));
     }
 }
 
-int PuzzleGrid::pieceIDtoGridPointID(int pieceID, Direction direction) const
+int PuzzleGrid::pieceIDtoGridPointID(int pieceID, Jigsaw::Direction direction) const
 {
     unsigned int index1 = pieceID + (pieceID / (m_cols - 1));
     unsigned int index2 = index1 + 1;
@@ -206,16 +206,16 @@ int PuzzleGrid::pieceIDtoGridPointID(int pieceID, Direction direction) const
     unsigned int index4 = index3 - 1;
 
     switch (direction) {
-    case Direction::TOPLEFT:
+    case Jigsaw::Direction::TOPLEFT:
         return index1;
         break;
-    case Direction::TOPRIGHT:
+    case Jigsaw::Direction::TOPRIGHT:
         return index2;
         break;
-    case Direction::BOTTOMLEFT:
+    case Jigsaw::Direction::BOTTOMLEFT:
         return index4;
         break;
-    case Direction::BOTTOMRIGHT:
+    case Jigsaw::Direction::BOTTOMRIGHT:
         return index3;
         break;
     default:
@@ -224,7 +224,7 @@ int PuzzleGrid::pieceIDtoGridPointID(int pieceID, Direction direction) const
     }
 }
 
-int PuzzleGrid::gridPointIDtoPieceID(int gridPointID, Direction direction) const
+int PuzzleGrid::gridPointIDtoPieceID(int gridPointID, Jigsaw::Direction direction) const
 {
     if (gridPointID >= m_puzzlePiecesGrid.size()) return -1;
 
@@ -234,16 +234,16 @@ int PuzzleGrid::gridPointIDtoPieceID(int gridPointID, Direction direction) const
     unsigned int index4 = index1 - m_cols + 1;
 
     switch (direction) {
-    case Direction::TOPLEFT:
+    case Jigsaw::Direction::TOPLEFT:
         return (isOnRightBorder(gridPointID) || isOnBottomBorder(gridPointID)) ? -1 : index1;
         break;
-    case Direction::TOPRIGHT:
+    case Jigsaw::Direction::TOPRIGHT:
         return (isOnLeftBorder(gridPointID) || isOnBottomBorder(gridPointID)) ? -1 : index2;
         break;
-    case Direction::BOTTOMRIGHT:
+    case Jigsaw::Direction::BOTTOMRIGHT:
         return (isOnLeftBorder(gridPointID) || isOnTopBorder(gridPointID)) ? -1 : index3;
         break;
-    case Direction::BOTTOMLEFT:
+    case Jigsaw::Direction::BOTTOMLEFT:
         return (isOnRightBorder(gridPointID) || isOnTopBorder(gridPointID)) ? -1 : index4;
         break;
     default:
@@ -265,14 +265,14 @@ QRect PuzzleGrid::puzzlePieceBounds(int pieceID)
     return QRect(0, 0, 0, 0);
 }
 
-void PuzzleGrid::createGridPaths(TypeOfPiece typeOfPiece)
+void PuzzleGrid::createGridPaths(Jigsaw::TypeOfPiece typeOfPiece)
 {
     QPoint start, end;
     QRect boundsCompletePuzzle (QPoint(0, 0), QSize(m_puzzleTotalWidth, m_puzzleTotalHeight));
     QRect boundsFirstPiece;
     QRect boundsSecondPiece;
     QRect boundsForPath;
-    TypeOfPiece type;
+    Jigsaw::TypeOfPiece type;
     bool hasCollision;
     int emergencyCounter;
 
@@ -285,7 +285,7 @@ void PuzzleGrid::createGridPaths(TypeOfPiece typeOfPiece)
         boundsFirstPiece = isOnTopBorder(i) ? boundsCompletePuzzle : m_puzzlePieceBounds[gridPointIDtoPieceID(i - m_cols)];
         boundsSecondPiece = isOnBottomBorder(i) ? boundsCompletePuzzle : m_puzzlePieceBounds[gridPointIDtoPieceID(i)];
         boundsForPath = boundsFirstPiece.intersected(boundsSecondPiece);
-        type = (isOnTopBorder(i) || isOnBottomBorder(i)) ? TypeOfPiece::TRAPEZOID : typeOfPiece;
+        type = (isOnTopBorder(i) || isOnBottomBorder(i)) ? Jigsaw::TypeOfPiece::TRAPEZOID : typeOfPiece;
 
         m_horizontalGridPaths[i] = JigsawPath(start, end, boundsForPath, type, m_customPath).path();
     }
@@ -301,7 +301,7 @@ void PuzzleGrid::createGridPaths(TypeOfPiece typeOfPiece)
         boundsFirstPiece = isOnLeftBorder(j) ? boundsCompletePuzzle : m_puzzlePieceBounds[gridPointIDtoPieceID(j - 1)];
         boundsSecondPiece = isOnRightBorder(j) ? boundsCompletePuzzle : m_puzzlePieceBounds[gridPointIDtoPieceID(j)];
         boundsForPath = boundsFirstPiece.intersected(boundsSecondPiece);
-        type = (isOnLeftBorder(j) || isOnRightBorder(j)) ? TypeOfPiece::TRAPEZOID : typeOfPiece;
+        type = (isOnLeftBorder(j) || isOnRightBorder(j)) ? Jigsaw::TypeOfPiece::TRAPEZOID : typeOfPiece;
 
         /*
          * It is possible for two adjacent JigsawPaths to intersect each other without violating their borders. In
@@ -325,7 +325,7 @@ void PuzzleGrid::createGridPaths(TypeOfPiece typeOfPiece)
 
         if (emergencyCounter >= 20) {
             //qDebug() << "Could not solve intersection from vertical grid path" << j << "from" << start << "to" << end;
-            m_verticalGridPaths[j] = JigsawPath(start, end, boundsForPath, TypeOfPiece::SIMPLEARC).path();
+            m_verticalGridPaths[j] = JigsawPath(start, end, boundsForPath, Jigsaw::TypeOfPiece::SIMPLEARC).path();
         }
 //        else {
 //            qDebug() << "Intersection solved at attemp" << emergencyCounter;
@@ -342,10 +342,10 @@ void PuzzleGrid::createCombinedPaths()
 
 QPainterPath PuzzleGrid::combinePath(int pieceID) const
 {
-    unsigned int index1 = pieceIDtoGridPointID(pieceID, Direction::TOPLEFT);
-    unsigned int index2 = pieceIDtoGridPointID(pieceID, Direction::TOPRIGHT);
-    //unsigned int index3 = pieceIDtoGridPointID(pieceID, Direction::BOTTOMRIGHT);
-    unsigned int index4 = pieceIDtoGridPointID(pieceID, Direction::BOTTOMLEFT);
+    unsigned int index1 = pieceIDtoGridPointID(pieceID, Jigsaw::Direction::TOPLEFT);
+    unsigned int index2 = pieceIDtoGridPointID(pieceID, Jigsaw::Direction::TOPRIGHT);
+    //unsigned int index3 = pieceIDtoGridPointID(pieceID, Jigsaw::Direction::BOTTOMRIGHT);
+    unsigned int index4 = pieceIDtoGridPointID(pieceID, Jigsaw::Direction::BOTTOMLEFT);
 
     QPainterPath combinedPath = m_horizontalGridPaths[index1];
     combinedPath.connectPath(m_verticalGridPaths[index2]);
@@ -355,16 +355,6 @@ QPainterPath PuzzleGrid::combinePath(int pieceID) const
     combinedPath.translate(m_overlayGrid[pieceIDtoGridPointID(pieceID)] * (-1));
 
     return combinedPath;
-}
-
-int PuzzleGrid::randomNumber(int min, int max)
-{
-    std::random_device rd;
-    std::mt19937 g(rd());
-    int range = (max - min) + 1;
-    if (range < 1) return 1;
-    int result = (g() % range) + min;
-    return result;
 }
 
 void PuzzleGrid::debugGrid()
@@ -377,10 +367,10 @@ void PuzzleGrid::debugGrid()
     for (int i = 0; i < m_numberOfPieces; ++i) {
         qDebug() << "Piece" << i << ":";
         qDebug() << "Puzzle pieces grid points:";
-        qDebug() << "Top    Left :" << m_puzzlePiecesGrid[pieceIDtoGridPointID(i, Direction::TOPLEFT)] << "Is on Border:" << isOnBorder(pieceIDtoGridPointID(i, Direction::TOPLEFT));
-        qDebug() << "Top    Right:" << m_puzzlePiecesGrid[pieceIDtoGridPointID(i, Direction::TOPRIGHT)] << "Is on Border:" << isOnBorder(pieceIDtoGridPointID(i, Direction::TOPRIGHT));
-        qDebug() << "Bottom Right:" << m_puzzlePiecesGrid[pieceIDtoGridPointID(i, Direction::BOTTOMRIGHT)] << "Is on Border:" << isOnBorder(pieceIDtoGridPointID(i, Direction::BOTTOMRIGHT));
-        qDebug() << "Bottom Left :" << m_puzzlePiecesGrid[pieceIDtoGridPointID(i, Direction::BOTTOMLEFT)] << "Is on Border:" << isOnBorder(pieceIDtoGridPointID(i, Direction::BOTTOMLEFT));
+        qDebug() << "Top    Left :" << m_puzzlePiecesGrid[pieceIDtoGridPointID(i, Jigsaw::Direction::TOPLEFT)] << "Is on Border:" << isOnBorder(pieceIDtoGridPointID(i, Jigsaw::Direction::TOPLEFT));
+        qDebug() << "Top    Right:" << m_puzzlePiecesGrid[pieceIDtoGridPointID(i, Jigsaw::Direction::TOPRIGHT)] << "Is on Border:" << isOnBorder(pieceIDtoGridPointID(i, Jigsaw::Direction::TOPRIGHT));
+        qDebug() << "Bottom Right:" << m_puzzlePiecesGrid[pieceIDtoGridPointID(i, Jigsaw::Direction::BOTTOMRIGHT)] << "Is on Border:" << isOnBorder(pieceIDtoGridPointID(i, Jigsaw::Direction::BOTTOMRIGHT));
+        qDebug() << "Bottom Left :" << m_puzzlePiecesGrid[pieceIDtoGridPointID(i, Jigsaw::Direction::BOTTOMLEFT)] << "Is on Border:" << isOnBorder(pieceIDtoGridPointID(i, Jigsaw::Direction::BOTTOMLEFT));
 
         qDebug() << "Bounds:" << m_puzzlePieceBounds[i];
 
@@ -390,7 +380,7 @@ void PuzzleGrid::debugGrid()
     }
 }
 
-PuzzleGrid::PuzzleGrid(int rowsOfPieces, int colsOfPieces, int puzzlePiecesWidth, int puzzlePiecesHeight, TypeOfPiece typeOfPiece, QObject *parent, const CustomJigsawPath &customPath)
+PuzzleGrid::PuzzleGrid(int rowsOfPieces, int colsOfPieces, int puzzlePiecesWidth, int puzzlePiecesHeight, Jigsaw::TypeOfPiece typeOfPiece, QObject *parent, const CustomJigsawPath &customPath)
     : QObject{parent}
     , m_rows(rowsOfPieces + 1)
     , m_cols(colsOfPieces + 1)
@@ -430,7 +420,7 @@ PuzzleGrid::~PuzzleGrid()
 
 }
 
-QPoint PuzzleGrid::symmetricGridPoint(int pieceID, Direction direction) const
+QPoint PuzzleGrid::symmetricGridPoint(int pieceID, Jigsaw::Direction direction) const
 {
     unsigned int index1 = pieceID + (pieceID / (m_cols - 1));
     unsigned int index2 = index1 + 1;
@@ -438,16 +428,16 @@ QPoint PuzzleGrid::symmetricGridPoint(int pieceID, Direction direction) const
     unsigned int index4 = index3 - 1;
 
     switch (direction) {
-    case Direction::TOPLEFT:
+    case Jigsaw::Direction::TOPLEFT:
         return m_symmetricGrid[index1];
         break;
-    case Direction::TOPRIGHT:
+    case Jigsaw::Direction::TOPRIGHT:
         return m_symmetricGrid[index2];
         break;
-    case Direction::BOTTOMRIGHT:
+    case Jigsaw::Direction::BOTTOMRIGHT:
         return m_symmetricGrid[index3];
         break;
-    case Direction::BOTTOMLEFT:
+    case Jigsaw::Direction::BOTTOMLEFT:
         return m_symmetricGrid[index4];
         break;
     default:
@@ -456,7 +446,7 @@ QPoint PuzzleGrid::symmetricGridPoint(int pieceID, Direction direction) const
     }
 }
 
-QPoint PuzzleGrid::overlayGridPoint(int pieceID, Direction direction) const
+QPoint PuzzleGrid::overlayGridPoint(int pieceID, Jigsaw::Direction direction) const
 {
     unsigned int index1 = pieceID + (pieceID / (m_cols - 1));
     unsigned int index2 = index1 + 1;
@@ -464,16 +454,16 @@ QPoint PuzzleGrid::overlayGridPoint(int pieceID, Direction direction) const
     unsigned int index4 = index3 - 1;
 
     switch (direction) {
-    case Direction::TOPLEFT:
+    case Jigsaw::Direction::TOPLEFT:
         return m_overlayGrid[index1];
         break;
-    case Direction::TOPRIGHT:
+    case Jigsaw::Direction::TOPRIGHT:
         return m_overlayGrid[index2];
         break;
-    case Direction::BOTTOMRIGHT:
+    case Jigsaw::Direction::BOTTOMRIGHT:
         return m_overlayGrid[index3];
         break;
-    case Direction::BOTTOMLEFT:
+    case Jigsaw::Direction::BOTTOMLEFT:
         return m_overlayGrid[index4];
         break;
     default:
@@ -482,7 +472,7 @@ QPoint PuzzleGrid::overlayGridPoint(int pieceID, Direction direction) const
     }
 }
 
-QPoint PuzzleGrid::puzzlePieceGridPoint(int pieceID, Direction direction) const
+QPoint PuzzleGrid::puzzlePieceGridPoint(int pieceID, Jigsaw::Direction direction) const
 {
     unsigned int index1 = pieceID + (pieceID / (m_cols - 1));
     unsigned int index2 = index1 + 1;
@@ -490,16 +480,16 @@ QPoint PuzzleGrid::puzzlePieceGridPoint(int pieceID, Direction direction) const
     unsigned int index4 = index3 - 1;
 
     switch (direction) {
-    case Direction::TOPLEFT:
+    case Jigsaw::Direction::TOPLEFT:
         return m_puzzlePiecesGrid[index1];
         break;
-    case Direction::TOPRIGHT:
+    case Jigsaw::Direction::TOPRIGHT:
         return m_puzzlePiecesGrid[index2];
         break;
-    case Direction::BOTTOMRIGHT:
+    case Jigsaw::Direction::BOTTOMRIGHT:
         return m_puzzlePiecesGrid[index3];
         break;
-    case Direction::BOTTOMLEFT:
+    case Jigsaw::Direction::BOTTOMLEFT:
         return m_puzzlePiecesGrid[index4];
         break;
     default:

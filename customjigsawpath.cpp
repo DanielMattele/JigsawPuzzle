@@ -283,8 +283,8 @@ CustomJigsawPath CustomJigsawPath::getRandomizedPath() const
         if (randomizedPath.pathPoint(i).randomOffset.type == TypeOfRandomOffset::CIRCULAR) {
             QLineF pathPointToRandomOffset;
             pathPointToRandomOffset.setP1(randomizedPath.pathPoint(i).position);
-            pathPointToRandomOffset.setAngle(randomNumber(0, 359));
-            pathPointToRandomOffset.setLength(randomNumber(0, randomizedPath.pathPoint(i).randomOffset.value) * lengthStartToEnd / 100);
+            pathPointToRandomOffset.setAngle(Jigsaw::randomNumber(0, 359));
+            pathPointToRandomOffset.setLength(Jigsaw::randomNumber(0, randomizedPath.pathPoint(i).randomOffset.value) * lengthStartToEnd / 100);
             randomizedPath.setRandomOffsetPathPoint(i, TypeOfRandomOffset::NONE, 0.0);
             randomizedPath.setPositionPathPoint(i, pathPointToRandomOffset.p2());
             for (int j = 0; j < randomizedPath.numberOfPoints(); ++j) {
@@ -297,8 +297,8 @@ CustomJigsawPath CustomJigsawPath::getRandomizedPath() const
         if (randomizedPath.pathPoint(i).randomOffsetControlPoint.type == TypeOfRandomOffset::CIRCULAR) {
             QLineF pathControlPointToRandomOffset;
             pathControlPointToRandomOffset.setP1(randomizedPath.pathPoint(i).positionControlPoint);
-            pathControlPointToRandomOffset.setAngle(randomNumber(0, 359));
-            pathControlPointToRandomOffset.setLength(randomNumber(0, randomizedPath.pathPoint(i).randomOffsetControlPoint.value) * lengthStartToEnd / 100);
+            pathControlPointToRandomOffset.setAngle(Jigsaw::randomNumber(0, 359));
+            pathControlPointToRandomOffset.setLength(Jigsaw::randomNumber(0, randomizedPath.pathPoint(i).randomOffsetControlPoint.value) * lengthStartToEnd / 100);
             randomizedPath.setRandomOffsetControlPoint(i, TypeOfRandomOffset::NONE, 0.0);
             randomizedPath.setPositionControlPoint(i, pathControlPointToRandomOffset.p2());
             for (int j = 0; j < randomizedPath.numberOfPoints(); ++j) {
@@ -316,8 +316,8 @@ CustomJigsawPath CustomJigsawPath::getRandomizedPath() const
             QLineF pathPointToRandomOffset;
             pathPointToRandomOffset.setP1(randomizedPath.pathPoint(i).position);
             pathPointToRandomOffset.setAngle(QLineF(*randomizedPath.pathPoint(i).randomOffset.lineP1, *randomizedPath.pathPoint(i).randomOffset.lineP2).angle());
-            pathPointToRandomOffset.setAngle(randomNumber(0, 1) == 0 ? pathPointToRandomOffset.angle() : pathPointToRandomOffset.angle() - 180);
-            pathPointToRandomOffset.setLength(randomNumber(0, randomizedPath.pathPoint(i).randomOffset.value) * lengthStartToEnd / 100);
+            pathPointToRandomOffset.setAngle(Jigsaw::randomNumber(0, 1) == 0 ? pathPointToRandomOffset.angle() : pathPointToRandomOffset.angle() - 180);
+            pathPointToRandomOffset.setLength(Jigsaw::randomNumber(0, randomizedPath.pathPoint(i).randomOffset.value) * lengthStartToEnd / 100);
             randomizedPath.setRandomOffsetPathPoint(i, TypeOfRandomOffset::NONE, 0.0);
             randomizedPath.setPositionPathPoint(i, pathPointToRandomOffset.p2());
             for (int i = 0; i < randomizedPath.numberOfPoints(); ++i) {
@@ -331,8 +331,8 @@ CustomJigsawPath CustomJigsawPath::getRandomizedPath() const
             QLineF pathControlPointToRandomOffset;
             pathControlPointToRandomOffset.setP1(randomizedPath.pathPoint(i).positionControlPoint);
             pathControlPointToRandomOffset.setAngle(QLineF(*randomizedPath.pathPoint(i).randomOffsetControlPoint.lineP1, *randomizedPath.pathPoint(i).randomOffsetControlPoint.lineP2).angle());
-            pathControlPointToRandomOffset.setAngle(randomNumber(0, 1) == 0 ? pathControlPointToRandomOffset.angle() : pathControlPointToRandomOffset.angle() - 180);
-            pathControlPointToRandomOffset.setLength(randomNumber(0, randomizedPath.pathPoint(i).randomOffsetControlPoint.value) * lengthStartToEnd / 100);
+            pathControlPointToRandomOffset.setAngle(Jigsaw::randomNumber(0, 1) == 0 ? pathControlPointToRandomOffset.angle() : pathControlPointToRandomOffset.angle() - 180);
+            pathControlPointToRandomOffset.setLength(Jigsaw::randomNumber(0, randomizedPath.pathPoint(i).randomOffsetControlPoint.value) * lengthStartToEnd / 100);
             randomizedPath.setRandomOffsetControlPoint(i, TypeOfRandomOffset::NONE, 0.0);
             randomizedPath.setPositionControlPoint(i, pathControlPointToRandomOffset.p2());
             for (int i = 0; i < randomizedPath.numberOfPoints(); ++i) {
@@ -355,13 +355,4 @@ void CustomJigsawPath::changeDistanceFromLine(QPointF &pointToChange, const QLin
     lineNormalVector.translate(intersectionPoint - lineNormalVector.p1());
     lineNormalVector.setLength(newDistance);
     pointToChange = lineNormalVector.p2();
-}
-
-int CustomJigsawPath::randomNumber(int min, int max) const
-{
-    std::random_device rd;
-    std::mt19937 g(rd());
-    int range = (max - min) + 1;
-    int result = (g() % range) + min;
-    return result;
 }

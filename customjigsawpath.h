@@ -3,6 +3,7 @@
 
 #include <QPainterPath>
 #include <QPoint>
+#include "Jigsaw.h"
 
 /*
  * The CustomJigsawPath class is used to store the user's inputs from the editor.
@@ -147,8 +148,6 @@ public:
 
 private:
     QVector<CustomJigsawPath::PathPoint> m_pathPoints;
-
-    int randomNumber(int min, int max) const;
 };
 
 #endif // CUSTOMJIGSAWPATH_H

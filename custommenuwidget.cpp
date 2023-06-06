@@ -34,8 +34,8 @@ CustomMenuWidget::CustomMenuWidget(QSize size, QWidget *parent)
     QSize sizeInnerBounds(70, 60);
     QSize sizeOuterBounds(130, 100);
 
-    QPainterPath pathNewButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
-    QPainterPath pathQuitButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
+    QPainterPath pathNewButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBounds), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
+    QPainterPath pathQuitButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBounds), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
 
     m_newPuzzleButton = new JigsawButton(sizeOuterBounds, QBrush(backgroundButtons), pathNewButton, this, "New");
     m_newPuzzleButton->setFont(QFont("Georgia", 16, QFont::Bold));

@@ -22,6 +22,8 @@ set(PROJECT_SOURCES
 
         backgrounds.qrc
 
+        Jigsaw.h
+
         custommenuwidget.h
         custommenuwidget.cpp
 

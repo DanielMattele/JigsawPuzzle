@@ -8,12 +8,7 @@
 #include <QPoint>
 #include <QRect>
 
-enum class Direction {
-    TOPLEFT,
-    TOPRIGHT,
-    BOTTOMLEFT,
-    BOTTOMRIGHT
-};
+
 
 /*
  * This class calculates the coordinates for the corners of the JigsawPieces as well as the JigsawPaths. The image
@@ -31,7 +26,7 @@ private:
     int m_cols;
     int m_numberOfGridPoints;
     int m_numberOfPieces;
-    TypeOfPiece m_typeOfPiece;
+    Jigsaw::TypeOfPiece m_typeOfPiece;
     CustomJigsawPath m_customPath;
 
     int currentRow(int pointID) const;
@@ -75,15 +70,15 @@ private:
 
     QVector<QRect> m_puzzlePieceBounds;
 
-    int pieceIDtoGridPointID(int pieceID, Direction direction = Direction::TOPLEFT) const;
-    int gridPointIDtoPieceID(int gridPointID, Direction direction = Direction::TOPLEFT) const;
+    int pieceIDtoGridPointID(int pieceID, Jigsaw::Direction direction = Jigsaw::Direction::TOPLEFT) const;
+    int gridPointIDtoPieceID(int gridPointID, Jigsaw::Direction direction = Jigsaw::Direction::TOPLEFT) const;
     void createPuzzlePieceBounds();
     QRect puzzlePieceBounds(int pieceID);
 
     QVector<QPainterPath> m_horizontalGridPaths;
     QVector<QPainterPath> m_verticalGridPaths;
 
-    void createGridPaths(TypeOfPiece typeOfPiece);
+    void createGridPaths(Jigsaw::TypeOfPiece typeOfPiece);
     QVector<QPainterPath> m_combinedPaths;
 
     void createCombinedPaths();
@@ -92,12 +87,12 @@ private:
     void debugGrid();
 
 public:
-    explicit PuzzleGrid(int rowsOfPieces, int colsOfPieces, int puzzlePiecesWidth, int puzzlePiecesHeight, TypeOfPiece typeOfPiece, QObject *parent = nullptr, const CustomJigsawPath &customPath = CustomJigsawPath());
+    explicit PuzzleGrid(int rowsOfPieces, int colsOfPieces, int puzzlePiecesWidth, int puzzlePiecesHeight, Jigsaw::TypeOfPiece typeOfPiece, QObject *parent = nullptr, const CustomJigsawPath &customPath = CustomJigsawPath());
     ~PuzzleGrid();
 
-    QPoint symmetricGridPoint(int pieceID, Direction direction = Direction::TOPLEFT) const;
-    QPoint overlayGridPoint(int pieceID, Direction direction = Direction::TOPLEFT) const;
-    QPoint puzzlePieceGridPoint(int pieceID, Direction direction = Direction::TOPLEFT) const;
+    QPoint symmetricGridPoint(int pieceID, Jigsaw::Direction direction = Jigsaw::Direction::TOPLEFT) const;
+    QPoint overlayGridPoint(int pieceID, Jigsaw::Direction direction = Jigsaw::Direction::TOPLEFT) const;
+    QPoint puzzlePieceGridPoint(int pieceID, Jigsaw::Direction direction = Jigsaw::Direction::TOPLEFT) const;
 
     int pieceTotalWidth() const;
     int pieceTotalHeight() const;
@@ -107,8 +102,6 @@ public:
     QSize puzzleTotalSize() const;
 
     const QPainterPath &puzzlePath(int pieceID) const;
-
-    static int randomNumber(int min, int max);
 
 signals:
 

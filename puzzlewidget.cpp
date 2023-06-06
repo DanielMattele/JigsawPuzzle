@@ -193,7 +193,7 @@ void PuzzleWidget::generatePuzzlePieces()
     for (unsigned int i = 0; i < m_numberOfPieces; ++i) {
         m_puzzlePieces.push_back(new JigsawPiece(i, m_grid->pieceTotalSize(), QBrush(createImageFragment(i)), m_grid->puzzlePath(i), this));
         m_puzzlePieces.last()->setRotationEnabled(m_rotationAllowed);
-         if (m_rotationAllowed) m_puzzlePieces.last()->setAngle(PuzzleGrid::randomNumber(0, 35) * 10);
+         if (m_rotationAllowed) m_puzzlePieces.last()->setAngle(Jigsaw::randomNumber(0, 35) * 10);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragStarted, this, &PuzzleWidget::raisePieces);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragged, this, &PuzzleWidget::dragMergedPieces);
         QObject::connect(m_puzzlePieces.last(), &JigsawPiece::dragStopped, this, &PuzzleWidget::fixPieceIfPossible);
@@ -208,8 +208,8 @@ void PuzzleWidget::placePuzzlePieces()
     for (auto piece: m_puzzlePieces) {
         double ax, ay;
         do {
-            ax = PuzzleGrid::randomNumber(0, m_parameters.screenWidth - m_grid->pieceTotalWidth());
-            ay = PuzzleGrid::randomNumber(0, m_parameters.screenHeight - m_grid->pieceTotalHeight());
+            ax = Jigsaw::randomNumber(0, m_parameters.screenWidth - m_grid->pieceTotalWidth());
+            ay = Jigsaw::randomNumber(0, m_parameters.screenHeight - m_grid->pieceTotalHeight());
         }
         while (m_parameters.rectFreeArea.contains(QPoint(ax, ay)));
         piece->move(ax, ay);
@@ -260,14 +260,14 @@ void PuzzleWidget::setQuitWidget()
     m_quitWidget = new QWidget(this);
     m_quitWidget->setGeometry(QRect(positionWidget, sizeOuterBoundsBackground));
 
-    QPainterPath backgroundLabelPath = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsBackground), innerBoundsBackground, TypeOfPiece::STANDARD);
+    QPainterPath backgroundLabelPath = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsBackground), innerBoundsBackground, Jigsaw::TypeOfPiece::STANDARD);
     JigsawLabel* backgroundLabel = new JigsawLabel(sizeOuterBoundsBackground, QBrush(QPixmap(":/backgrounds/back3")), backgroundLabelPath,
                                                    m_quitWidget, "Are you sure?", innerBoundsBackground);
     backgroundLabel->setAlignment(Qt::AlignTop|Qt::AlignHCenter);
     backgroundLabel->setFont(m_parameters.mainFont);
 
-    QPainterPath backgroundYesButtonPath = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsButtons), QRect(), TypeOfPiece::STANDARD, 4, true);
-    QPainterPath backgroundNoButtonPath = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsButtons), QRect(), TypeOfPiece::STANDARD, 4, true);
+    QPainterPath backgroundYesButtonPath = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsButtons), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
+    QPainterPath backgroundNoButtonPath = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsButtons), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
 
     JigsawButton* yesButton = new JigsawButton(sizeOuterBoundsButtons, QBrush(QPixmap(":/backgrounds/back2")), backgroundYesButtonPath, m_quitWidget, "Yes");
     yesButton->move(innerBoundsBackground.left() + 10, innerBoundsBackground.bottom() - 10 - yesButton->height());
@@ -290,7 +290,7 @@ void PuzzleWidget::setNewWidget()
     m_newWidget = new QWidget(this);
     m_newWidget->setGeometry(m_parameters.rectWidget);
 
-    QPainterPath backgroundLabelPath = JigsawPath::singleJigsawPiecePath(m_parameters.rectWidget, m_parameters.rectWidgetArea, TypeOfPiece::STANDARD);
+    QPainterPath backgroundLabelPath = JigsawPath::singleJigsawPiecePath(m_parameters.rectWidget, m_parameters.rectWidgetArea, Jigsaw::TypeOfPiece::STANDARD);
     JigsawLabel* backgroundLabel = new JigsawLabel(m_parameters.sizeWidget, QBrush(QPixmap(":/backgrounds/back3")), backgroundLabelPath, m_newWidget,
                                                    "Create a new Jigsaw Puzzle!", m_parameters.rectWidgetArea);
     backgroundLabel->setAlignment(Qt::AlignTop|Qt::AlignHCenter);
@@ -310,7 +310,7 @@ void PuzzleWidget::setNewWidget()
     m_newWidget->hide();
 }
 
-void PuzzleWidget::setNewWidgetExWidget(QWidget *parent, const Parameters &par)
+void PuzzleWidget::setNewWidgetExWidget(QWidget *parent, const Jigsaw::Parameters &par)
 {
     QWidget* widgetEx = new QWidget(parent);
     widgetEx->setGeometry(par.rectWidgetEx);
@@ -382,14 +382,14 @@ void PuzzleWidget::setNewWidgetExWidget(QWidget *parent, const Parameters &par)
     m_radioButtonEx[0]->setChecked(true);
 }
 
-void PuzzleWidget::setNewWidgetPuzzlePieceWidget(QWidget *parent, const Parameters &par)
+void PuzzleWidget::setNewWidgetPuzzlePieceWidget(QWidget *parent, const Jigsaw::Parameters &par)
 {
     QWidget* widgetPuzzlePiece = new QWidget(parent);
     widgetPuzzlePiece->setGeometry(par.rectWidgetPuzzlePiece);
     QGroupBox* radioGroupBoxPuzzlePiece = new QGroupBox(widgetPuzzlePiece);
     radioGroupBoxPuzzlePiece->setGeometry(QRect(QPoint(0, 0), par.sizeWidgetPuzzlePiece));
     QVector<JigsawButton*> labelPuzzlePiece;
-    int numberOfTypes = static_cast<int>(TypeOfPiece::count);
+    int numberOfTypes = static_cast<int>(Jigsaw::TypeOfPiece::count);
     int maxLabelPuzzlePieceWidth = numberOfTypes != 0 ? (par.widthWidgetPuzzlePiece - (numberOfTypes + 1) * par.minBorderWidth) / numberOfTypes : 0;
     int maxLabelPuzzlePieceHeight = par.heightWidgetPuzzlePiece - par.minBorderWidth * 2 - par.minRadioButtonHeight;
     int labelPuzzlePieceWidth, labelPuzzlePieceHeight;
@@ -427,7 +427,7 @@ void PuzzleWidget::setNewWidgetPuzzlePieceWidget(QWidget *parent, const Paramete
 
         QObject::connect(labelPuzzlePiece[i], &JigsawButton::clicked, m_radioButtonPuzzlePiece[i], &QRadioButton::toggle);
     }
-    m_radioButtonPuzzlePiece[JigsawPath::typeOfPieceToInt(TypeOfPiece::STANDARD)]->setChecked(true);
+    m_radioButtonPuzzlePiece[JigsawPath::typeOfPieceToInt(Jigsaw::TypeOfPiece::STANDARD)]->setChecked(true);
     m_ownShapeLabel = labelPuzzlePiece.last();
     QObject::connect(labelPuzzlePiece.last(), &JigsawButton::clicked, m_createOwnShapeWidget, &QWidget::show);
     QObject::connect(labelPuzzlePiece.last(), &JigsawButton::clicked, m_createOwnShapeWidget, &QWidget::raise);
@@ -437,7 +437,7 @@ void PuzzleWidget::setNewWidgetPuzzlePieceWidget(QWidget *parent, const Paramete
     labelPuzzlePiece.last()->setFont(font);
 }
 
-void PuzzleWidget::setNewWidgetNumberOfPiecesWidget(QWidget *parent, const Parameters &par)
+void PuzzleWidget::setNewWidgetNumberOfPiecesWidget(QWidget *parent, const Jigsaw::Parameters &par)
 {
     QWidget* widgetNumberOfPieces = new QWidget(parent);
     widgetNumberOfPieces->setGeometry(par.rectWidgetNumberOfPieces);
@@ -450,7 +450,7 @@ void PuzzleWidget::setNewWidgetNumberOfPiecesWidget(QWidget *parent, const Param
     m_rotationAllowedCheckBox->setFont(m_parameters.mainFont);
     m_rotationAllowedCheckBox->setGeometry(QRect(QPoint(par.minBorderWidth + par.widthWidgetNumberOfPieces / 2, par.minBorderWidth), QSize(par.widthWidgetNumberOfPieces / 2 - par.minBorderWidth * 2, par.heightWidgetNumberOfPieces / 4 - par.minBorderWidth * 2)));
 
-    QPainterPath path = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), par.sizeButtonOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
+    QPainterPath path = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), par.sizeButtonOuterBounds), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
 
     m_sliderButton = new JigsawSlider(par.sizeButtonOuterBounds, QBrush(QPixmap(":/backgrounds/back2")), path, QBrush(QPixmap(":/backgrounds/back1")), widgetNumberOfPieces, 30, 10, 300);
     m_sliderButton->setGeometry(QRect(QPoint(0, caption->height() + par.minBorderWidth), QSize(par.widthWidgetNumberOfPieces - par.minBorderWidth * 4, par.heightWidgetNumberOfPieces / 8)));
@@ -458,15 +458,15 @@ void PuzzleWidget::setNewWidgetNumberOfPiecesWidget(QWidget *parent, const Param
     m_sliderButton->animate();
 }
 
-void PuzzleWidget::setNewWidgetButtonsWidget(QWidget *parent, const Parameters &par)
+void PuzzleWidget::setNewWidgetButtonsWidget(QWidget *parent, const Jigsaw::Parameters &par)
 {
     QWidget* widgetButtons = new QWidget(parent);
     widgetButtons->setGeometry(par.rectWidgetButtons);
 
     QSize sizeButtonOuterBounds(120, 120);
 
-    QPainterPath pathOkButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeButtonOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
-    QPainterPath pathCancelButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeButtonOuterBounds), QRect(), TypeOfPiece::STANDARD, 4, true);
+    QPainterPath pathOkButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeButtonOuterBounds), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
+    QPainterPath pathCancelButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeButtonOuterBounds), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
 
     JigsawButton* okButton = new JigsawButton(sizeButtonOuterBounds, QBrush(QPixmap(":/backgrounds/back2")), pathOkButton, widgetButtons, "Ok");
     okButton->animate();
@@ -495,12 +495,12 @@ void PuzzleWidget::setWonWidget()
     m_wonWidget = new QWidget(this);
     m_wonWidget->setGeometry(QRect(positionWidget, sizeOuterBoundsBackground));
 
-    QPainterPath pathBackgroundLabel = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsBackground), QRect(), TypeOfPiece::STANDARD, 4, true);
+    QPainterPath pathBackgroundLabel = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsBackground), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
     JigsawLabel* backgroundLabel = new JigsawLabel(sizeOuterBoundsBackground, QBrush(QPixmap(":/backgrounds/back3")), pathBackgroundLabel, m_wonWidget, "You won!!!", innerBoundsBackground);
     backgroundLabel->setAlignment(Qt::AlignTop|Qt::AlignHCenter);
     backgroundLabel->setFont(m_parameters.mainFont);
 
-    QPainterPath pathOkButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsButtons), QRect(), TypeOfPiece::STANDARD, 4, true);
+    QPainterPath pathOkButton = JigsawPath::singleJigsawPiecePath(QRect(QPoint(0, 0), sizeOuterBoundsButtons), QRect(), Jigsaw::TypeOfPiece::STANDARD, 4, true);
     JigsawButton* okButton = new JigsawButton(sizeOuterBoundsButtons, QBrush(QPixmap(":/backgrounds/back2")), pathOkButton, m_wonWidget, "Ok");
     okButton->move(innerBoundsBackground.center() + QPoint(-okButton->width() / 2, okButton->height() / 2));
     okButton->setFont(m_parameters.mainFont);

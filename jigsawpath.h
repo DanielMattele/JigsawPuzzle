@@ -6,18 +6,8 @@
 #include <QString>
 #include <random>
 #include <QDebug>
+#include "Jigsaw.h"
 
-enum class TypeOfPiece
-{
-    TRAPEZOID,
-    SIMPLEARC,
-    TRIANGLECONNECTIONS,
-    SIMPLECIRCLECONNECTIONS,
-    STANDARD,
-    STANDARDFUNNY,
-    CUSTOM,
-    count
-};
 
 /*
  * The JigsawPath class creates the different shapes of the jigsaw pieces. These different shapes can be chosen via the
@@ -31,27 +21,27 @@ class JigsawPath
 {
 public:
     JigsawPath();
-    JigsawPath(const QPoint &start, const QPoint &end, const QRect &bounds, TypeOfPiece typeOfPiece, const CustomJigsawPath &customPath = CustomJigsawPath(), bool noRandom = false);
+    JigsawPath(const QPoint &start, const QPoint &end, const QRect &bounds, Jigsaw::TypeOfPiece typeOfPiece, const CustomJigsawPath &customPath = CustomJigsawPath(), bool noRandom = false);
     ~JigsawPath();
 
     void setStart(const QPoint &start);
     void setEnd(const QPoint &end);
     void setBounds(const QRect &bounds);
-    void setTypeOfPiece(TypeOfPiece typeOfPiece, const CustomJigsawPath &customPath = CustomJigsawPath(), bool noRandom = false);
+    void setTypeOfPiece(Jigsaw::TypeOfPiece typeOfPiece, const CustomJigsawPath &customPath = CustomJigsawPath(), bool noRandom = false);
 
     QPainterPath path() const;
     QPoint start() const;
     QPoint end() const;
     QRect bounds() const;
-    TypeOfPiece typeOfPiece() const;
+    Jigsaw::TypeOfPiece typeOfPiece() const;
     bool creatingPathSuccessful() const;
 
     int typeOfPieceToInt() const;
     QString tooltip() const;
 
-    static TypeOfPiece intToTypeOfPiece(int index);
-    static int typeOfPieceToInt(TypeOfPiece type);
-    static QString tooltip(TypeOfPiece type);
+    static Jigsaw::TypeOfPiece intToTypeOfPiece(int index);
+    static int typeOfPieceToInt(Jigsaw::TypeOfPiece type);
+    static QString tooltip(Jigsaw::TypeOfPiece type);
 
 
     /*
@@ -59,17 +49,17 @@ public:
      * submit the inner bounds (where the textarea is) yourself or use the recommended inner bounds. They guarantee that the function has enough
      * room between outer and inner bounds to find valid paths.
      */
-    static QPainterPath singleJigsawPiecePath(const QRect &outerBounds, const QRect &innerBounds, TypeOfPiece typeOfPiece,
+    static QPainterPath singleJigsawPiecePath(const QRect &outerBounds, const QRect &innerBounds, Jigsaw::TypeOfPiece typeOfPiece,
                                               int minForcedPaths = 2, bool useRecommendedInnerBounds = false,
                                               const CustomJigsawPath &customPath = CustomJigsawPath());
 
     /* WARNING: This function is very slow. It can take a few minutes to process.*/
-    static QVector<double> calculateRecommendedInnerBoundsPercentage(QVector<TypeOfPiece> types = {TypeOfPiece::TRAPEZOID,
-                                                                                           TypeOfPiece::SIMPLEARC,
-                                                                                           TypeOfPiece::TRIANGLECONNECTIONS,
-                                                                                           TypeOfPiece::SIMPLECIRCLECONNECTIONS,
-                                                                                           TypeOfPiece::STANDARD,
-                                                                                           TypeOfPiece::STANDARDFUNNY},
+    static QVector<double> calculateRecommendedInnerBoundsPercentage(QVector<Jigsaw::TypeOfPiece> types = {Jigsaw::TypeOfPiece::TRAPEZOID,
+                                                                                           Jigsaw::TypeOfPiece::SIMPLEARC,
+                                                                                           Jigsaw::TypeOfPiece::TRIANGLECONNECTIONS,
+                                                                                           Jigsaw::TypeOfPiece::SIMPLECIRCLECONNECTIONS,
+                                                                                           Jigsaw::TypeOfPiece::STANDARD,
+                                                                                           Jigsaw::TypeOfPiece::STANDARDFUNNY},
                                                              QSize size = QSize(1000, 1000), int startPercentage = 100, int startPaths = 1,
                                                              const CustomJigsawPath &customPath = CustomJigsawPath());
 
@@ -79,7 +69,7 @@ private:
     QPoint m_start, m_end;
     QPointF m_distanceVector, m_orthogonalVector, m_middlePoint;
     QRect m_bounds;
-    TypeOfPiece m_typeOfPiece;
+    Jigsaw::TypeOfPiece m_typeOfPiece;
     QPainterPath m_path;
     bool m_successful;
     CustomJigsawPath m_customPath;
@@ -99,8 +89,7 @@ private:
     bool generateCustomPath();
 
     static bool pathHasCollisions(const JigsawPath &jigsawPath, const QVector<JigsawPath> &collisionPaths);
-    static int randomNumber(int min, int max);
-    static QRect recommendedInnerBounds(const QRect &outerBounds, TypeOfPiece typeOfPiece, int minForcedPaths);
+    static QRect recommendedInnerBounds(const QRect &outerBounds, Jigsaw::TypeOfPiece typeOfPiece, int minForcedPaths);
 };
 
 #endif // JIGSAWPATH_H

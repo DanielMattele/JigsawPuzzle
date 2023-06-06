@@ -11,4 +11,6 @@ You can watch a game here:
 
 https://github.com/DanielMattele/JigsawPuzzle/assets/103319391/fc859b9c-0f28-40de-989b-84424ca8b641
 
+To see how the custom jigsaw piece creator works, watch this video:
+
 https://github.com/DanielMattele/JigsawPuzzle/assets/103319391/b0c01e73-104f-4107-8ac4-4fd081e259fd

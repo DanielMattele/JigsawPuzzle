@@ -4,13 +4,13 @@ JigsawPath::JigsawPath()
     : m_start(QPoint(0, 0))
     , m_end(QPoint(10, 10))
     , m_bounds(m_start, m_end)
-    , m_typeOfPiece(TypeOfPiece::TRAPEZOID)
+    , m_typeOfPiece(Jigsaw::TypeOfPiece::TRAPEZOID)
 {
     calculateParameters();
     generatePath();
 }
 
-JigsawPath::JigsawPath(const QPoint &start, const QPoint &end, const QRect &bounds, TypeOfPiece typeOfPiece, const CustomJigsawPath &customPath, bool noRandom)
+JigsawPath::JigsawPath(const QPoint &start, const QPoint &end, const QRect &bounds, Jigsaw::TypeOfPiece typeOfPiece, const CustomJigsawPath &customPath, bool noRandom)
     : m_start(start)
     , m_end(end)
     , m_bounds(bounds)
@@ -18,7 +18,7 @@ JigsawPath::JigsawPath(const QPoint &start, const QPoint &end, const QRect &boun
     , m_customPath(customPath)
     , m_noRandom(noRandom)
 {
-    if (typeOfPiece == TypeOfPiece::count) m_typeOfPiece = TypeOfPiece::TRAPEZOID;
+    if (typeOfPiece == Jigsaw::TypeOfPiece::count) m_typeOfPiece = Jigsaw::TypeOfPiece::TRAPEZOID;
     calculateParameters();
     generatePath();
 }
@@ -48,12 +48,12 @@ void JigsawPath::setBounds(const QRect &bounds)
     generatePath();
 }
 
-void JigsawPath::setTypeOfPiece(TypeOfPiece typeOfPiece, const CustomJigsawPath &customPath, bool noRandom)
+void JigsawPath::setTypeOfPiece(Jigsaw::TypeOfPiece typeOfPiece, const CustomJigsawPath &customPath, bool noRandom)
 {
     m_typeOfPiece = typeOfPiece;
     m_customPath = customPath;
     m_noRandom = noRandom;
-    if (typeOfPiece == TypeOfPiece::count) m_typeOfPiece = TypeOfPiece::TRAPEZOID;
+    if (typeOfPiece == Jigsaw::TypeOfPiece::count) m_typeOfPiece = Jigsaw::TypeOfPiece::TRAPEZOID;
     generatePath();
 }
 
@@ -77,7 +77,7 @@ QRect JigsawPath::bounds() const
     return m_bounds;
 }
 
-TypeOfPiece JigsawPath::typeOfPiece() const
+Jigsaw::TypeOfPiece JigsawPath::typeOfPiece() const
 {
     return m_typeOfPiece;
 }
@@ -97,79 +97,79 @@ QString JigsawPath::tooltip() const
     return JigsawPath::tooltip(m_typeOfPiece);
 }
 
-TypeOfPiece JigsawPath::intToTypeOfPiece(int index)
+Jigsaw::TypeOfPiece JigsawPath::intToTypeOfPiece(int index)
 {
     switch (index) {
     case (0):
-        return TypeOfPiece::TRAPEZOID;
+        return Jigsaw::TypeOfPiece::TRAPEZOID;
     case (1):
-        return TypeOfPiece::SIMPLEARC;
+        return Jigsaw::TypeOfPiece::SIMPLEARC;
     case (2):
-        return TypeOfPiece::TRIANGLECONNECTIONS;
+        return Jigsaw::TypeOfPiece::TRIANGLECONNECTIONS;
     case (3):
-        return TypeOfPiece::SIMPLECIRCLECONNECTIONS;
+        return Jigsaw::TypeOfPiece::SIMPLECIRCLECONNECTIONS;
     case (4):
-        return TypeOfPiece::STANDARD;
+        return Jigsaw::TypeOfPiece::STANDARD;
     case (5):
-        return TypeOfPiece::STANDARDFUNNY;
+        return Jigsaw::TypeOfPiece::STANDARDFUNNY;
     case (6):
-        return TypeOfPiece::CUSTOM;
+        return Jigsaw::TypeOfPiece::CUSTOM;
     default:
-        return TypeOfPiece::TRAPEZOID;
+        return Jigsaw::TypeOfPiece::TRAPEZOID;
     }
 }
 
-int JigsawPath::typeOfPieceToInt(TypeOfPiece type)
+int JigsawPath::typeOfPieceToInt(Jigsaw::TypeOfPiece type)
 {
     switch (type) {
-    case TypeOfPiece::TRAPEZOID:
+    case Jigsaw::TypeOfPiece::TRAPEZOID:
         return 0;
-    case TypeOfPiece::SIMPLEARC:
+    case Jigsaw::TypeOfPiece::SIMPLEARC:
         return 1;
-    case TypeOfPiece::TRIANGLECONNECTIONS:
+    case Jigsaw::TypeOfPiece::TRIANGLECONNECTIONS:
         return 2;
-    case TypeOfPiece::SIMPLECIRCLECONNECTIONS:
+    case Jigsaw::TypeOfPiece::SIMPLECIRCLECONNECTIONS:
         return 3;
-    case TypeOfPiece::STANDARD:
+    case Jigsaw::TypeOfPiece::STANDARD:
         return 4;
-    case TypeOfPiece::STANDARDFUNNY:
+    case Jigsaw::TypeOfPiece::STANDARDFUNNY:
         return 5;
-    case TypeOfPiece::CUSTOM:
+    case Jigsaw::TypeOfPiece::CUSTOM:
         return 6;
     default:
         return 0;
     }
 }
 
-QString JigsawPath::tooltip(TypeOfPiece type)
+QString JigsawPath::tooltip(Jigsaw::TypeOfPiece type)
 {
     switch (type) {
-    case TypeOfPiece::TRAPEZOID:
+    case Jigsaw::TypeOfPiece::TRAPEZOID:
         return "A simple form with straight lines.";
-    case TypeOfPiece::SIMPLEARC:
+    case Jigsaw::TypeOfPiece::SIMPLEARC:
         return "A simple form with curved lines.";
-    case TypeOfPiece::TRIANGLECONNECTIONS:
+    case Jigsaw::TypeOfPiece::TRIANGLECONNECTIONS:
         return "Straight lines with little triangles in the middle.";
-    case TypeOfPiece::SIMPLECIRCLECONNECTIONS:
+    case Jigsaw::TypeOfPiece::SIMPLECIRCLECONNECTIONS:
         return "Straight lines with little curves in the middle.";
-    case TypeOfPiece::STANDARD:
+    case Jigsaw::TypeOfPiece::STANDARD:
         return "Standard jigsaw pieces.";
-    case TypeOfPiece::STANDARDFUNNY:
+    case Jigsaw::TypeOfPiece::STANDARDFUNNY:
         return "Funny looking jigsaw pieces for kids.";
-    case TypeOfPiece::CUSTOM:
+    case Jigsaw::TypeOfPiece::CUSTOM:
         return "Create your own design!";
     default:
         return "Tooltip missing";
     }
 }
 
-QPainterPath JigsawPath::singleJigsawPiecePath(const QRect &outerBounds, const QRect &innerBounds, TypeOfPiece typeOfPiece,
+QPainterPath JigsawPath::singleJigsawPiecePath(const QRect &outerBounds, const QRect &innerBounds, Jigsaw::TypeOfPiece typeOfPiece,
                                                int minForcedPaths, bool useRecommendedInnerBounds,
                                                const CustomJigsawPath &customPath)
 {
-    if (typeOfPiece == TypeOfPiece::count) return QPainterPath();
+    if (typeOfPiece == Jigsaw::TypeOfPiece::count) return QPainterPath();
 
-    QRect usedInnerBounds = useRecommendedInnerBounds && typeOfPiece != TypeOfPiece::CUSTOM
+    QRect usedInnerBounds = useRecommendedInnerBounds && typeOfPiece != Jigsaw::TypeOfPiece::CUSTOM
                             ? recommendedInnerBounds(outerBounds, typeOfPiece, minForcedPaths)
                             : innerBounds;
     QPoint topLeft, topRight, bottomRight, bottomLeft;
@@ -186,10 +186,10 @@ QPainterPath JigsawPath::singleJigsawPiecePath(const QRect &outerBounds, const Q
     do {
         collisions = 0;
         unsuccessful = 0;
-        topLeft = QPoint(randomNumber(outerBounds.left(), usedInnerBounds.left()), randomNumber(outerBounds.top(), usedInnerBounds.top()));
-        topRight = QPoint(randomNumber(usedInnerBounds.right(), outerBounds.right()), randomNumber(outerBounds.top(), usedInnerBounds.top()));
-        bottomRight = QPoint(randomNumber(usedInnerBounds.right(), outerBounds.right()), randomNumber(usedInnerBounds.bottom(), outerBounds.bottom()));
-        bottomLeft = QPoint(randomNumber(outerBounds.left(), usedInnerBounds.left()), randomNumber(usedInnerBounds.bottom(), outerBounds.bottom()));
+        topLeft = QPoint(Jigsaw::randomNumber(outerBounds.left(), usedInnerBounds.left()), Jigsaw::randomNumber(outerBounds.top(), usedInnerBounds.top()));
+        topRight = QPoint(Jigsaw::randomNumber(usedInnerBounds.right(), outerBounds.right()), Jigsaw::randomNumber(outerBounds.top(), usedInnerBounds.top()));
+        bottomRight = QPoint(Jigsaw::randomNumber(usedInnerBounds.right(), outerBounds.right()), Jigsaw::randomNumber(usedInnerBounds.bottom(), outerBounds.bottom()));
+        bottomLeft = QPoint(Jigsaw::randomNumber(outerBounds.left(), usedInnerBounds.left()), Jigsaw::randomNumber(usedInnerBounds.bottom(), outerBounds.bottom()));
 
         topBounds = QRect(outerBounds.topLeft(), QPoint(outerBounds.right(), usedInnerBounds.top()));
         rightBounds = QRect(QPoint(usedInnerBounds.right(), outerBounds.top()), outerBounds.bottomRight());
@@ -214,10 +214,10 @@ QPainterPath JigsawPath::singleJigsawPiecePath(const QRect &outerBounds, const Q
 
     if (emergencyCounter >= maxAttempts && collisions > 0) {
         if (debug) qDebug() << "Could not generate paths without collisions; generating trapezoid instead.";
-        path = JigsawPath(topLeft, topRight, topBounds, TypeOfPiece::TRAPEZOID).path();
-        path.connectPath(JigsawPath(topRight, bottomRight, rightBounds, TypeOfPiece::TRAPEZOID).path());
-        path.connectPath(JigsawPath(bottomRight, bottomLeft, bottomBounds, TypeOfPiece::TRAPEZOID).path());
-        path.connectPath(JigsawPath(bottomLeft, topLeft, leftBounds, TypeOfPiece::TRAPEZOID).path());
+        path = JigsawPath(topLeft, topRight, topBounds, Jigsaw::TypeOfPiece::TRAPEZOID).path();
+        path.connectPath(JigsawPath(topRight, bottomRight, rightBounds, Jigsaw::TypeOfPiece::TRAPEZOID).path());
+        path.connectPath(JigsawPath(bottomRight, bottomLeft, bottomBounds, Jigsaw::TypeOfPiece::TRAPEZOID).path());
+        path.connectPath(JigsawPath(bottomLeft, topLeft, leftBounds, Jigsaw::TypeOfPiece::TRAPEZOID).path());
     }
     else {
         if (debug) qDebug() << "Paths generated at attemp" << emergencyCounter;
@@ -241,25 +241,25 @@ void JigsawPath::calculateParameters()
 void JigsawPath::generatePath()
 {
     switch (m_typeOfPiece) {
-    case TypeOfPiece::TRAPEZOID:
+    case Jigsaw::TypeOfPiece::TRAPEZOID:
         m_successful = generateTrapezoidPath();
         break;
-    case TypeOfPiece::SIMPLEARC:
+    case Jigsaw::TypeOfPiece::SIMPLEARC:
         m_successful = generateSimpleArcPath();
         break;
-    case TypeOfPiece::TRIANGLECONNECTIONS:
+    case Jigsaw::TypeOfPiece::TRIANGLECONNECTIONS:
         m_successful = generateTriangleConnectionsPath();
         break;
-    case TypeOfPiece::SIMPLECIRCLECONNECTIONS:
+    case Jigsaw::TypeOfPiece::SIMPLECIRCLECONNECTIONS:
         m_successful = generateSimpleCircleConnectionsPath();
         break;
-    case TypeOfPiece::STANDARD:
+    case Jigsaw::TypeOfPiece::STANDARD:
         m_successful = generateStandardPath();
         break;
-    case TypeOfPiece::STANDARDFUNNY:
+    case Jigsaw::TypeOfPiece::STANDARDFUNNY:
         m_successful = generateStandardFunnyPath();
         break;
-    case TypeOfPiece::CUSTOM:
+    case Jigsaw::TypeOfPiece::CUSTOM:
         m_successful = generateCustomPath();
         break;
     default:
@@ -287,8 +287,8 @@ bool JigsawPath::generateSimpleArcPath()
     do {
         m_path.clear();
 
-        offset = randomNumber(5, 8);
-        side = randomNumber(1, 2);
+        offset = Jigsaw::randomNumber(5, 8);
+        side = Jigsaw::randomNumber(1, 2);
         side = (side == 1) ? 1 : -1;
         controlPoint = m_middlePoint + m_orthogonalVector / offset * side;
         ++emergencyCounter;
@@ -322,8 +322,8 @@ bool JigsawPath::generateTriangleConnectionsPath()
     do {
         m_path.clear();
 
-        offset = randomNumber(3, 5);
-        side = randomNumber(1, 2);
+        offset = Jigsaw::randomNumber(3, 5);
+        side = Jigsaw::randomNumber(1, 2);
         side = (side == 1) ? 1 : -1;
         triangleTipPoint = m_middlePoint + m_orthogonalVector / offset * side;
         ++emergencyCounter;
@@ -360,8 +360,8 @@ bool JigsawPath::generateSimpleCircleConnectionsPath()
     do {
         m_path.clear();
 
-        offset = randomNumber(3, 5);
-        side = randomNumber(1, 2);
+        offset = Jigsaw::randomNumber(3, 5);
+        side = Jigsaw::randomNumber(1, 2);
         side = (side == 1) ? 1 : -1;
         controlPoint = m_middlePoint + m_orthogonalVector / offset * side;
         ++emergencyCounter;
@@ -403,10 +403,10 @@ bool JigsawPath::generateStandardPath()
     do {
         m_path.clear();
 
-        side = randomNumber(1, 2);
+        side = Jigsaw::randomNumber(1, 2);
         side = (side == 1) ? 1 : -1;
 
-        size = randomNumber(12, 20);
+        size = Jigsaw::randomNumber(12, 20);
         distanceUnitVector = m_distanceVector / size;
         orthogonalUnitVector = m_orthogonalVector / size;
 
@@ -493,15 +493,15 @@ bool JigsawPath::generateStandardFunnyPath()
     do {
         m_path.clear();
 
-        offsetPathPoint = QVector<int>(8, randomNumber(randomNumberMin, randomNumberMax));
-        orthogonalOffsetPathPoint = QVector<int>(8, randomNumber(randomNumberMin, randomNumberMax));
-        offsetControlPoint = QVector<int>(7, randomNumber(randomNumberMin, randomNumberMax));
-        orthogonalOffsetControlPoint = QVector<int>(7, randomNumber(randomNumberMin, randomNumberMax));
+        offsetPathPoint = QVector<int>(8, Jigsaw::randomNumber(randomNumberMin, randomNumberMax));
+        orthogonalOffsetPathPoint = QVector<int>(8, Jigsaw::randomNumber(randomNumberMin, randomNumberMax));
+        offsetControlPoint = QVector<int>(7, Jigsaw::randomNumber(randomNumberMin, randomNumberMax));
+        orthogonalOffsetControlPoint = QVector<int>(7, Jigsaw::randomNumber(randomNumberMin, randomNumberMax));
 
         orthogonalOffsetControlPoint[3] = orthogonalOffsetPathPoint[4];
         orthogonalOffsetControlPoint[4] = orthogonalOffsetPathPoint[4];
 
-        side = randomNumber(1, 2);
+        side = Jigsaw::randomNumber(1, 2);
         side = (side == 1) ? 1 : -1;
 
         pathPoint[2] = pathPoint[1] + m_distanceVector / 5 * 2;
@@ -577,7 +577,7 @@ bool JigsawPath::generateCustomPath()
 
     do {
 
-        side = randomNumber(1, 2);
+        side = Jigsaw::randomNumber(1, 2);
         side = (side == 1) ? 1 : -1;
         if (m_noRandom) side = 1;
         else customPathTemp = m_customPath.getRandomizedPath();
@@ -643,21 +643,12 @@ bool JigsawPath::pathHasCollisions(const JigsawPath &jigsawPath, const QVector<J
         return false;
 }
 
-int JigsawPath::randomNumber(int min, int max)
-{
-    std::random_device rd;
-    std::mt19937 g(rd());
-    int range = (max - min) + 1;
-    int result = (g() % range) + min;
-    return result;
-}
-
-QRect JigsawPath::recommendedInnerBounds(const QRect &outerBounds, TypeOfPiece typeOfPiece, int minForcedPaths)
+QRect JigsawPath::recommendedInnerBounds(const QRect &outerBounds, Jigsaw::TypeOfPiece typeOfPiece, int minForcedPaths)
 {
     if (minForcedPaths > 4 || minForcedPaths <= 0) minForcedPaths = 2;
     double sizePercentage;
     switch (typeOfPiece) {
-    case TypeOfPiece::TRAPEZOID:
+    case Jigsaw::TypeOfPiece::TRAPEZOID:
         switch (minForcedPaths) {
         case 1:
             sizePercentage = 0.85;
@@ -673,7 +664,7 @@ QRect JigsawPath::recommendedInnerBounds(const QRect &outerBounds, TypeOfPiece t
             break;
         }
         break;
-    case TypeOfPiece::SIMPLEARC:
+    case Jigsaw::TypeOfPiece::SIMPLEARC:
         switch (minForcedPaths) {
         case 1:
             sizePercentage = 0.85;
@@ -689,7 +680,7 @@ QRect JigsawPath::recommendedInnerBounds(const QRect &outerBounds, TypeOfPiece t
             break;
         }
         break;
-    case TypeOfPiece::TRIANGLECONNECTIONS:
+    case Jigsaw::TypeOfPiece::TRIANGLECONNECTIONS:
         switch (minForcedPaths) {
         case 1:
             sizePercentage = 0.65;
@@ -705,7 +696,7 @@ QRect JigsawPath::recommendedInnerBounds(const QRect &outerBounds, TypeOfPiece t
             break;
         }
         break;
-    case TypeOfPiece::SIMPLECIRCLECONNECTIONS:
+    case Jigsaw::TypeOfPiece::SIMPLECIRCLECONNECTIONS:
         switch (minForcedPaths) {
         case 1:
             sizePercentage = 0.79;
@@ -721,7 +712,7 @@ QRect JigsawPath::recommendedInnerBounds(const QRect &outerBounds, TypeOfPiece t
             break;
         }
         break;
-    case TypeOfPiece::STANDARD:
+    case Jigsaw::TypeOfPiece::STANDARD:
         switch (minForcedPaths) {
         case 1:
             sizePercentage = 0.63;
@@ -737,7 +728,7 @@ QRect JigsawPath::recommendedInnerBounds(const QRect &outerBounds, TypeOfPiece t
             break;
         }
         break;
-    case TypeOfPiece::STANDARDFUNNY:
+    case Jigsaw::TypeOfPiece::STANDARDFUNNY:
         switch (minForcedPaths) {
         case 1:
             sizePercentage = 0.51;
@@ -801,7 +792,7 @@ QRect JigsawPath::recommendedInnerBounds(const QRect &outerBounds, TypeOfPiece t
 //        Minimum Forced Paths: 4 Recommended size percentage: 0.35
 }
 
-QVector<double> JigsawPath::calculateRecommendedInnerBoundsPercentage(QVector<TypeOfPiece> types, QSize size, int startPercentage, int startPaths, const CustomJigsawPath &customPath)
+QVector<double> JigsawPath::calculateRecommendedInnerBoundsPercentage(QVector<Jigsaw::TypeOfPiece> types, QSize size, int startPercentage, int startPaths, const CustomJigsawPath &customPath)
 {
     bool liveDebug = false;
 
@@ -857,10 +848,10 @@ QVector<double> JigsawPath::calculateRecommendedInnerBoundsPercentage(QVector<Ty
                     do {
                         collisions = 0;
                         unsuccessful = 0;
-                        topLeft = QPoint(randomNumber(outerBounds.left(), innerBounds.left()), randomNumber(outerBounds.top(), innerBounds.top()));
-                        topRight = QPoint(randomNumber(innerBounds.right(), outerBounds.right()), randomNumber(outerBounds.top(), innerBounds.top()));
-                        bottomRight = QPoint(randomNumber(innerBounds.right(), outerBounds.right()), randomNumber(innerBounds.bottom(), outerBounds.bottom()));
-                        bottomLeft = QPoint(randomNumber(outerBounds.left(), innerBounds.left()), randomNumber(innerBounds.bottom(), outerBounds.bottom()));
+                        topLeft = QPoint(Jigsaw::randomNumber(outerBounds.left(), innerBounds.left()), Jigsaw::randomNumber(outerBounds.top(), innerBounds.top()));
+                        topRight = QPoint(Jigsaw::randomNumber(innerBounds.right(), outerBounds.right()), Jigsaw::randomNumber(outerBounds.top(), innerBounds.top()));
+                        bottomRight = QPoint(Jigsaw::randomNumber(innerBounds.right(), outerBounds.right()), Jigsaw::randomNumber(innerBounds.bottom(), outerBounds.bottom()));
+                        bottomLeft = QPoint(Jigsaw::randomNumber(outerBounds.left(), innerBounds.left()), Jigsaw::randomNumber(innerBounds.bottom(), outerBounds.bottom()));
 
                         topBounds = QRect(outerBounds.topLeft(), QPoint(outerBounds.right(), innerBounds.top()));
                         rightBounds = QRect(QPoint(innerBounds.right(), outerBounds.top()), outerBounds.bottomRight());

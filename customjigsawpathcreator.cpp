@@ -302,7 +302,7 @@ void CustomJigsawPathCreator::testButtonClicked()
 
     JigsawPath jigsawPath(m_customJigsawPath.pathPoint(0).position.toPoint(),
                           m_customJigsawPath.pathPoint(m_customJigsawPath.numberOfPoints() - 1).position.toPoint(),
-                          m_canvas->rect(), TypeOfPiece::CUSTOM, m_customJigsawPath, true);
+                          m_canvas->rect(), Jigsaw::TypeOfPiece::CUSTOM, m_customJigsawPath, true);
 
     double maxHeightPath = jigsawPath.path().boundingRect().height();
     double maxWidthPath = jigsawPath.path().boundingRect().width();
@@ -313,7 +313,7 @@ void CustomJigsawPathCreator::testButtonClicked()
     if (m_testCheckBox->isChecked()) {
         sizePercentage = 1.0 - 2 * ratio;
         sizePercentage = sizePercentage <= 0.4 ? 0.4 : sizePercentage;
-        sizePercentage = JigsawPath::calculateRecommendedInnerBoundsPercentage({TypeOfPiece::CUSTOM}, QSize(100, 100), round(sizePercentage * 100), 4, m_customJigsawPath).at(0);
+        sizePercentage = JigsawPath::calculateRecommendedInnerBoundsPercentage({Jigsaw::TypeOfPiece::CUSTOM}, QSize(100, 100), round(sizePercentage * 100), 4, m_customJigsawPath).at(0);
     }
     else {
         sizePercentage = 1.0 - 3 * ratio;
@@ -324,9 +324,9 @@ void CustomJigsawPathCreator::testButtonClicked()
     QSize innerBoundsSize(sizePercentage * outerBounds.width(), sizePercentage * outerBounds.height());
     QRect innerBounds(innerBoundsTopLeft, innerBoundsSize);
 
-    QPainterPath path1 = JigsawPath::singleJigsawPiecePath(outerBounds, innerBounds, TypeOfPiece::CUSTOM, 4, false, m_customJigsawPath);
-    QPainterPath path2 = JigsawPath::singleJigsawPiecePath(outerBounds, innerBounds, TypeOfPiece::CUSTOM, 4, false, m_customJigsawPath);
-    QPainterPath path3 = JigsawPath::singleJigsawPiecePath(outerBounds, innerBounds, TypeOfPiece::CUSTOM, 4, false, m_customJigsawPath);
+    QPainterPath path1 = JigsawPath::singleJigsawPiecePath(outerBounds, innerBounds, Jigsaw::TypeOfPiece::CUSTOM, 4, false, m_customJigsawPath);
+    QPainterPath path2 = JigsawPath::singleJigsawPiecePath(outerBounds, innerBounds, Jigsaw::TypeOfPiece::CUSTOM, 4, false, m_customJigsawPath);
+    QPainterPath path3 = JigsawPath::singleJigsawPiecePath(outerBounds, innerBounds, Jigsaw::TypeOfPiece::CUSTOM, 4, false, m_customJigsawPath);
 
     painter1.setPen(Qt::black);
     painter1.setBrush(Qt::gray);
@@ -360,7 +360,7 @@ void CustomJigsawPathCreator::repaintCanvas()
 
     JigsawPath jigsawPath(m_customJigsawPath.pathPoint(0).position.toPoint(),
                           m_customJigsawPath.pathPoint(m_customJigsawPath.numberOfPoints() - 1).position.toPoint(),
-                          m_canvas->rect(), TypeOfPiece::CUSTOM, m_customJigsawPath, true);
+                          m_canvas->rect(), Jigsaw::TypeOfPiece::CUSTOM, m_customJigsawPath, true);
 
     QPainter painter(&pixmap);
     painter.setBrush(Qt::transparent);
@@ -869,7 +869,7 @@ void CustomJigsawPathCreator::addPointRestrictionToWidget()
     QLabel* distanceLabel = new QLabel("Distance:", m_entriesWidget.last());
     m_entriesLayout.last()->addWidget(distanceLabel);
     m_pointsRestrictionDistanceSpinBox.push_back(new QDoubleSpinBox(m_entriesWidget.last()));
-    m_pointsRestrictionDistanceSpinBox.last()->setMinimum(0);
+    m_pointsRestrictionDistanceSpinBox.last()->setMinimum(-50);
     m_pointsRestrictionDistanceSpinBox.last()->setMaximum(50);
     m_entriesLayout.last()->addWidget(m_pointsRestrictionDistanceSpinBox.last());
     QObject::connect(m_pointsRestrictionDistanceSpinBox.last(), &QDoubleSpinBox::valueChanged, this, &CustomJigsawPathCreator::inputFromWidgets);
@@ -1004,7 +1004,7 @@ void CustomJigsawPathCreator::addControlPointRestrictionToWidget()
     QLabel* distanceLabel = new QLabel("Distance:", m_entriesWidget.last());
     m_entriesLayout.last()->addWidget(distanceLabel);
     m_controlPointsRestrictionDistanceSpinBox.push_back(new QDoubleSpinBox(m_entriesWidget.last()));
-    m_controlPointsRestrictionDistanceSpinBox.last()->setMinimum(0);
+    m_controlPointsRestrictionDistanceSpinBox.last()->setMinimum(-50);
     m_controlPointsRestrictionDistanceSpinBox.last()->setMaximum(50);
     m_entriesLayout.last()->addWidget(m_controlPointsRestrictionDistanceSpinBox.last());
     QObject::connect(m_controlPointsRestrictionDistanceSpinBox.last(), &QDoubleSpinBox::valueChanged, this, &CustomJigsawPathCreator::inputFromWidgets);
